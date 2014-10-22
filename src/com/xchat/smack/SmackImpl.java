@@ -1,17 +1,23 @@
 package com.xchat.smack;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
 
 import android.content.ContentResolver;
+import android.util.Log;
 
 import com.way.exception.XXException;
 import com.xchat.service.XXService;
+import com.xchat.utils.L;
 import com.xchat.utils.PreferenceConstants;
 import com.xchat.utils.PreferenceUtils;
 
 public class SmackImpl implements Smack {
 
+	private static final int PACKET_TIMEOUT = 30000;
 	private ConnectionConfiguration mXMPPConfig;
 	private XMPPConnection mXMPPConnection;
 	private XXService mService;
@@ -22,8 +28,7 @@ public class SmackImpl implements Smack {
 				PreferenceConstants.CUSTOM_SERVER, "");
 		int port = PreferenceUtils.getPrefInt(service,
 				PreferenceConstants.PORT, PreferenceConstants.DEFAULT_PORT_INT);
-		String server = PreferenceUtils.getPrefString(service,
-				PreferenceConstants.Server, PreferenceConstants.GMAIL_SERVER);
+		String server = PreferenceUtils.getPrefString(service, PreferenceConstants.Server, PreferenceConstants.GMAIL_SERVER);
 		boolean smackdebug = PreferenceUtils.getPrefBoolean(service,
 				PreferenceConstants.SMACKDEBUG, false);
 		boolean requireSsl = PreferenceUtils.getPrefBoolean(service,
@@ -49,8 +54,57 @@ public class SmackImpl implements Smack {
 	
 	@Override
 	public boolean login(String account, String password) throws XXException {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			if (mXMPPConnection.isConnected()) {
+				try {
+					mXMPPConnection.disconnect();
+				} catch (Exception e) {
+					L.d("conn.disconnect() failed: " + e);
+				}
+			}
+			SmackConfiguration.setPacketReplyTimeout(PACKET_TIMEOUT);
+			SmackConfiguration.setKeepAliveInterval(-1);
+			SmackConfiguration.setDefaultPingInterval(0);
+			//registerRosterListener();// 监听联系人动态变化
+			mXMPPConnection.connect();
+			if (!mXMPPConnection.isConnected()) {
+				throw new XXException("SMACK connect failed without exception!");
+			}
+			mXMPPConnection.addConnectionListener(new ConnectionListener() {
+				public void connectionClosedOnError(Exception e) {
+					//mService.postConnectionFailed(e.getMessage());
+				}
+
+				public void connectionClosed() {
+				}
+
+				public void reconnectingIn(int seconds) {
+				}
+
+				public void reconnectionFailed(Exception e) {
+				}
+
+				public void reconnectionSuccessful() {
+				}
+			});
+			//initServiceDiscovery();// 与服务器交互消息监听,发送消息需要回执，判断是否发送成功
+			// SMACK auto-logins if we were authenticated before
+			if (!mXMPPConnection.isAuthenticated()) {
+				String ressource = PreferenceUtils.getPrefString(mService, PreferenceConstants.RESSOURCE, "XX");
+				mXMPPConnection.login(account, password, ressource);
+			}
+			setStatusFromConfig();// 更新在线状态
+
+		} catch (XMPPException e) {
+			throw new XXException(e.getLocalizedMessage(),
+					e.getWrappedThrowable());
+		} catch (Exception e) {
+			// actually we just care for IllegalState or NullPointer or XMPPEx.
+			L.e(SmackImpl.class, "login(): " + Log.getStackTraceString(e));
+			throw new XXException(e.getLocalizedMessage(), e.getCause());
+		}
+		//registerAllListener();// 注册监听其他的事件，比如新消息
+		return mXMPPConnection.isAuthenticated();
 	}
 
 	@Override
