@@ -16,10 +16,11 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.Vibrator;
 
+import com.xchat.activity.ChatActivity;
 import com.xchat.activity.R;
-import com.xchat.utils.L;
-import com.xchat.utils.PreferenceConstants;
-import com.xchat.utils.PreferenceUtils;
+import com.xchat.util.L;
+import com.xchat.util.PreferenceConstants;
+import com.xchat.util.PreferenceUtils;
 
 public abstract class BaseService extends Service {
 
@@ -82,7 +83,7 @@ public abstract class BaseService extends Service {
 
 	private void addNotificationMGR() {
 		mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		//mNotificationIntent = new Intent(this, ChatActivity.class);
+		mNotificationIntent = new Intent(this, ChatActivity.class);
 	}
 
 	protected void notifyClient(String fromJid, String fromUserName,
@@ -153,7 +154,8 @@ public abstract class BaseService extends Service {
 				System.currentTimeMillis());
 		Uri userNameUri = Uri.parse(fromJid);
 		mNotificationIntent.setData(userNameUri);
-		//mNotificationIntent.putExtra(ChatActivity.INTENT_EXTRA_USERNAME, fromUserId);
+		mNotificationIntent.putExtra(ChatActivity.INTENT_EXTRA_USERNAME,
+				fromUserId);
 		mNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		// need to set flag FLAG_UPDATE_CURRENT to get extras transferred

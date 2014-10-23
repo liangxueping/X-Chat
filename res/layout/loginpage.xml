@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
     <LinearLayout
         android:id="@+id/scrollAreaLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:background="@drawable/shape_line"
         android:focusable="true"
         android:focusableInTouchMode="true"
@@ -20,17 +20,17 @@
             android:layout_marginTop="83.0dip"
             android:background="@drawable/card_avatar"
             android:scaleType="fitXY"
-            android:src="@drawable/login_default_avatar" 
-            android:contentDescription="@string/contentDescription"/>
+            android:src="@drawable/login_default_avatar"
+            android:contentDescription="@string/content_description"/>
 
         <RelativeLayout
             android:id="@+id/loginInputView"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
 
             <LinearLayout
                 android:id="@+id/input"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32.0dip"
                 android:layout_marginRight="32.0dip"
@@ -39,15 +39,15 @@
                 android:orientation="vertical" >
 
                 <RelativeLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content" >
 
                     <EditText
                         android:id="@+id/account_input"
-                        android:layout_width="match_parent"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
-                        android:hint="@string/account_input_hint"
+                        android:hint="@string/xchat_email_address"
                         android:imeActionLabel="@string/next"
                         android:maxLength="50"
                         android:paddingBottom="6.0dip"
@@ -70,18 +70,18 @@
                 </RelativeLayout>
 
                 <View
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="1.0px"
                     android:background="#ffcfd4da" />
 
                 <RelativeLayout
                     android:id="@+id/relativeLayout1"
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content" >
 
                     <EditText
                         android:id="@+id/password"
-                        android:layout_width="match_parent"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:hint="@string/password_input_prompt"
@@ -110,7 +110,7 @@
 
             <LinearLayout
                 android:id="@+id/loginlayout"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="50.0dip"
                 android:layout_alignLeft="@id/input"
                 android:layout_alignRight="@id/input"
@@ -121,8 +121,8 @@
                 <Button
                     android:id="@+id/login"
                     style="@style/login_Font"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
                     android:background="@drawable/chat_send_button_bg"
                     android:gravity="center"
                     android:onClick="onLoginClick"
@@ -133,7 +133,7 @@
         </RelativeLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="32.0dip"
             android:layout_marginRight="32.0dip"
@@ -165,7 +165,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15.0dip"
             android:layout_marginLeft="32.0dip"
@@ -200,9 +200,11 @@
             android:layout_height="0dip"
             android:layout_weight="1.0" />
     </LinearLayout>
+
     <include
         android:id="@+id/login_help_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         layout="@layout/login_help" />
+
 </FrameLayout>

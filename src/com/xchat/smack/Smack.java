@@ -1,6 +1,6 @@
 package com.xchat.smack;
 
-import com.way.exception.XXException;
+import com.xchat.exception.XXException;
 
 public interface Smack {
 	public boolean login(String account, String password) throws XXException;
