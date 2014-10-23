@@ -23,9 +23,9 @@ import com.xchat.activity.BaseActivity.BackPressHandler;
 import com.xchat.activity.LoginActivity;
 import com.xchat.activity.MainActivity;
 import com.xchat.activity.R;
-import com.xchat.app.XXBroadcastReceiver;
-import com.xchat.app.XXBroadcastReceiver.EventHandler;
-import com.xchat.exception.XXException;
+import com.xchat.app.XChatBroadcastReceiver;
+import com.xchat.app.XChatBroadcastReceiver.EventHandler;
+import com.xchat.exception.XChatException;
 import com.xchat.smack.SmackImpl;
 import com.xchat.util.L;
 import com.xchat.util.NetUtil;
@@ -33,7 +33,7 @@ import com.xchat.util.PreferenceConstants;
 import com.xchat.util.PreferenceUtils;
 import com.xchat.util.T;
 
-public class XXService extends BaseService implements EventHandler,
+public class XChatService extends BaseService implements EventHandler,
 		BackPressHandler {
 	public static final int CONNECTED = 0;
 	public static final int DISCONNECTED = -1;
@@ -81,7 +81,7 @@ public class XXService extends BaseService implements EventHandler,
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		L.i(XXService.class, "[SERVICE] onBind");
+		L.i(XChatService.class, "[SERVICE] onBind");
 		String chatPartner = intent.getDataString();
 		if ((chatPartner != null)) {
 			mIsBoundTo.add(chatPartner);
@@ -122,15 +122,15 @@ public class XXService extends BaseService implements EventHandler,
 	}
 
 	public class XXBinder extends Binder {
-		public XXService getService() {
-			return XXService.this;
+		public XChatService getService() {
+			return XChatService.this;
 		}
 	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		XXBroadcastReceiver.mListeners.add(this);
+		XChatBroadcastReceiver.mListeners.add(this);
 		BaseActivity.mListeners.add(this);
 		mActivityManager = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
 		mPackageName = getPackageName();
@@ -144,10 +144,10 @@ public class XXService extends BaseService implements EventHandler,
 		if (intent != null
 				&& intent.getAction() != null
 				&& TextUtils.equals(intent.getAction(),
-						XXBroadcastReceiver.BOOT_COMPLETED_ACTION)) {
-			String account = PreferenceUtils.getPrefString(XXService.this,
+						XChatBroadcastReceiver.BOOT_COMPLETED_ACTION)) {
+			String account = PreferenceUtils.getPrefString(XChatService.this,
 					PreferenceConstants.ACCOUNT, "");
-			String password = PreferenceUtils.getPrefString(XXService.this,
+			String password = PreferenceUtils.getPrefString(XChatService.this,
 					PreferenceConstants.PASSWORD, "");
 			if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(password))
 				Login(account, password);
@@ -160,7 +160,7 @@ public class XXService extends BaseService implements EventHandler,
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		XXBroadcastReceiver.mListeners.remove(this);
+		XChatBroadcastReceiver.mListeners.remove(this);
 		BaseActivity.mListeners.remove(this);
 		((AlarmManager) getSystemService(Context.ALARM_SERVICE))
 				.cancel(mPAlarmIntent);// 取消重连闹钟
@@ -183,7 +183,7 @@ public class XXService extends BaseService implements EventHandler,
 			public void run() {
 				try {
 					postConnecting();
-					mSmackable = new SmackImpl(XXService.this);
+					mSmackable = new SmackImpl(XChatService.this);
 					if (mSmackable.login(account, password)) {
 						// 登陆成功
 						postConnectionScuessed();
@@ -191,13 +191,13 @@ public class XXService extends BaseService implements EventHandler,
 						// 登陆失败
 						postConnectionFailed(LOGIN_FAILED);
 					}
-				} catch (XXException e) {
+				} catch (XChatException e) {
 					String message = e.getLocalizedMessage();
 					// 登陆失败
 					if (e.getCause() != null)
 						message += "\n" + e.getCause().getLocalizedMessage();
 					postConnectionFailed(message);
-					L.i(XXService.class, "YaximXMPPException in doConnect():");
+					L.i(XChatService.class, "YaximXMPPException in doConnect():");
 					e.printStackTrace();
 				} finally {
 					if (mConnectingThread != null)
@@ -279,7 +279,7 @@ public class XXService extends BaseService implements EventHandler,
 	public void addRosterItem(String user, String alias, String group) {
 		try {
 			mSmackable.addRosterItem(user, alias, group);
-		} catch (XXException e) {
+		} catch (XChatException e) {
 			T.showShort(this, e.getMessage());
 			L.e("exception in addRosterItem(): " + e.getMessage());
 		}
@@ -294,7 +294,7 @@ public class XXService extends BaseService implements EventHandler,
 	public void removeRosterItem(String user) {
 		try {
 			mSmackable.removeRosterItem(user);
-		} catch (XXException e) {
+		} catch (XChatException e) {
 			T.showShort(this, e.getMessage());
 			L.e("exception in removeRosterItem(): " + e.getMessage());
 		}
@@ -304,7 +304,7 @@ public class XXService extends BaseService implements EventHandler,
 	public void moveRosterItemToGroup(String user, String group) {
 		try {
 			mSmackable.moveRosterItemToGroup(user, group);
-		} catch (XXException e) {
+		} catch (XChatException e) {
 			T.showShort(this, e.getMessage());
 			L.e("exception in moveRosterItemToGroup(): " + e.getMessage());
 		}
@@ -314,7 +314,7 @@ public class XXService extends BaseService implements EventHandler,
 	public void renameRosterItem(String user, String newName) {
 		try {
 			mSmackable.renameRosterItem(user, newName);
-		} catch (XXException e) {
+		} catch (XChatException e) {
 			T.showShort(this, e.getMessage());
 			L.e("exception in renameRosterItem(): " + e.getMessage());
 		}
@@ -331,7 +331,7 @@ public class XXService extends BaseService implements EventHandler,
 	 * @param reason
 	 */
 	private void connectionFailed(String reason) {
-		L.i(XXService.class, "connectionFailed: " + reason);
+		L.i(XChatService.class, "connectionFailed: " + reason);
 		mConnectedState = DISCONNECTED;// 更新当前连接状态
 		if (TextUtils.equals(reason, LOGOUT)) {// 如果是手动退出
 			((AlarmManager) getSystemService(Context.ALARM_SERVICE))
@@ -353,9 +353,9 @@ public class XXService extends BaseService implements EventHandler,
 			return;
 		}
 
-		String account = PreferenceUtils.getPrefString(XXService.this,
+		String account = PreferenceUtils.getPrefString(XChatService.this,
 				PreferenceConstants.ACCOUNT, "");
-		String password = PreferenceUtils.getPrefString(XXService.this,
+		String password = PreferenceUtils.getPrefString(XChatService.this,
 				PreferenceConstants.PASSWORD, "");
 		// 无保存的帐号密码时，也直接返回
 		if (TextUtils.isEmpty(account) || TextUtils.isEmpty(password)) {
@@ -418,9 +418,9 @@ public class XXService extends BaseService implements EventHandler,
 	public void newMessage(final String from, final String message) {
 		mMainHandler.post(new Runnable() {
 			public void run() {
-				if (!PreferenceUtils.getPrefBoolean(XXService.this,
+				if (!PreferenceUtils.getPrefBoolean(XChatService.this,
 						PreferenceConstants.SCLIENTNOTIFY, false))
-					MediaPlayer.create(XXService.this, R.raw.office).start();
+					MediaPlayer.create(XChatService.this, R.raw.office).start();
 				if (!isAppOnForeground())
 					notifyClient(from, mSmackable.getNameForJID(from), message,
 							!mIsBoundTo.contains(from));
@@ -517,7 +517,7 @@ public class XXService extends BaseService implements EventHandler,
 	private class ReconnectAlarmReceiver extends BroadcastReceiver {
 		public void onReceive(Context ctx, Intent i) {
 			L.d("Alarm received.");
-			if (!PreferenceUtils.getPrefBoolean(XXService.this,
+			if (!PreferenceUtils.getPrefBoolean(XChatService.this,
 					PreferenceConstants.AUTO_RECONNECT, true)) {
 				return;
 			}
@@ -525,9 +525,9 @@ public class XXService extends BaseService implements EventHandler,
 				L.d("Reconnect attempt aborted: we are connected again!");
 				return;
 			}
-			String account = PreferenceUtils.getPrefString(XXService.this,
+			String account = PreferenceUtils.getPrefString(XChatService.this,
 					PreferenceConstants.ACCOUNT, "");
-			String password = PreferenceUtils.getPrefString(XXService.this,
+			String password = PreferenceUtils.getPrefString(XChatService.this,
 					PreferenceConstants.PASSWORD, "");
 			if (TextUtils.isEmpty(account) || TextUtils.isEmpty(password)) {
 				L.d("account = null || password = null");
@@ -545,9 +545,9 @@ public class XXService extends BaseService implements EventHandler,
 		}
 		if (isAuthenticated())// 如果已经连接上，直接返回
 			return;
-		String account = PreferenceUtils.getPrefString(XXService.this,
+		String account = PreferenceUtils.getPrefString(XChatService.this,
 				PreferenceConstants.ACCOUNT, "");
-		String password = PreferenceUtils.getPrefString(XXService.this,
+		String password = PreferenceUtils.getPrefString(XChatService.this,
 				PreferenceConstants.PASSWORD, "");
 		if (TextUtils.isEmpty(account) || TextUtils.isEmpty(password))// 如果没有帐号，也直接返回
 			return;

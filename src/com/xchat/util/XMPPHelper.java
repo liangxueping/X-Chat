@@ -13,30 +13,29 @@ import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.util.TypedValue;
 
-import com.xchat.app.XXApp;
-import com.xchat.exception.XXAdressMalformedException;
+import com.xchat.app.XChatApp;
+import com.xchat.exception.XChatAdressMalformedException;
 
 public class XMPPHelper {
 	private static final Pattern EMOTION_URL = Pattern.compile("\\[(\\S+?)\\]");
 
-	public static void verifyJabberID(String jid)
-			throws XXAdressMalformedException {
+	public static void verifyJabberID(String jid) throws XChatAdressMalformedException {
 		if (jid != null) {
-			Pattern p = Pattern
-					.compile("(?i)[a-z0-9\\-_\\.]++@[a-z0-9\\-_]++(\\.[a-z0-9\\-_]++)++");
+			//验证邮箱格式
+			//Pattern p = Pattern.compile("(?i)[a-z0-9\\-_\\.]++@[a-z0-9\\-_]++(\\.[a-z0-9\\-_]++)++");
+			Pattern p = Pattern.compile("(?i)[a-z0-9\\-_\\.]++");
 			Matcher m = p.matcher(jid);
 
 			if (!m.matches()) {
-				throw new XXAdressMalformedException(
+				throw new XChatAdressMalformedException(
 						"Configured Jabber-ID is incorrect!");
 			}
 		} else {
-			throw new XXAdressMalformedException("Jabber-ID wasn't set!");
+			throw new XChatAdressMalformedException("Jabber-ID wasn't set!");
 		}
 	}
 
-	public static void verifyJabberID(Editable jid)
-			throws XXAdressMalformedException {
+	public static void verifyJabberID(Editable jid) throws XChatAdressMalformedException {
 		verifyJabberID(jid.toString());
 	}
 
@@ -52,15 +51,13 @@ public class XMPPHelper {
 
 	public static int getEditTextColor(Context ctx) {
 		TypedValue tv = new TypedValue();
-		boolean found = ctx.getTheme().resolveAttribute(
-				android.R.attr.editTextColor, tv, true);
+		boolean found = ctx.getTheme().resolveAttribute(android.R.attr.editTextColor, tv, true);
 		if (found) {
 			// SDK 11+
 			return ctx.getResources().getColor(tv.resourceId);
 		} else {
 			// SDK < 11
-			return ctx.getResources().getColor(
-					android.R.color.primary_text_light);
+			return ctx.getResources().getColor(android.R.color.primary_text_light);
 		}
 	}
 
@@ -98,8 +95,8 @@ public class XMPPHelper {
 			int k = localMatcher.start();
 			int m = localMatcher.end();
 			if (m - k < 8) {
-				if (XXApp.getInstance().getFaceMap().containsKey(str2)) {
-					int face = XXApp.getInstance().getFaceMap().get(str2);
+				if (XChatApp.getInstance().getFaceMap().containsKey(str2)) {
+					int face = XChatApp.getInstance().getFaceMap().get(str2);
 					Bitmap bitmap = BitmapFactory.decodeResource(
 							context.getResources(), face);
 					if (bitmap != null) {

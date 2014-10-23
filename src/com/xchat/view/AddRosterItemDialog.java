@@ -14,15 +14,15 @@ import android.widget.EditText;
 
 import com.xchat.activity.MainActivity;
 import com.xchat.activity.R;
-import com.xchat.exception.XXAdressMalformedException;
-import com.xchat.service.XXService;
+import com.xchat.exception.XChatAdressMalformedException;
+import com.xchat.service.XChatService;
 import com.xchat.util.XMPPHelper;
 
 public class AddRosterItemDialog extends AlertDialog implements
 		DialogInterface.OnClickListener, TextWatcher {
 
 	private MainActivity mMainActivity;
-	private XXService mXxService;
+	private XChatService mXxService;
 
 	private Button okButton;
 	private EditText userInputField;
@@ -30,7 +30,7 @@ public class AddRosterItemDialog extends AlertDialog implements
 	private GroupNameView mGroupNameView;
 
 	public AddRosterItemDialog(MainActivity mainActivity,
-			XXService service) {
+			XChatService service) {
 		super(mainActivity);
 		mMainActivity = mainActivity;
 		mXxService = service;
@@ -54,7 +54,7 @@ public class AddRosterItemDialog extends AlertDialog implements
 
 	}
 	public AddRosterItemDialog(MainActivity mainActivity,
-			XXService service, String jid) {
+			XChatService service, String jid) {
 		this(mainActivity, service);
 		userInputField.setText(jid);
 	}
@@ -79,7 +79,7 @@ public class AddRosterItemDialog extends AlertDialog implements
 			XMPPHelper.verifyJabberID(s);
 			okButton.setEnabled(true);
 			userInputField.setTextColor(XMPPHelper.getEditTextColor(mMainActivity));
-		} catch (XXAdressMalformedException e) {
+		} catch (XChatAdressMalformedException e) {
 			okButton.setEnabled(false);
 			userInputField.setTextColor(Color.RED);
 		}

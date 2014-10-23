@@ -12,7 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.xchat.activity.R;
-import com.xchat.app.XXApp;
+import com.xchat.app.XChatApp;
 
 public class FaceAdapter extends BaseAdapter {
 	
@@ -25,7 +25,7 @@ public class FaceAdapter extends BaseAdapter {
 		// TODO Auto-generated constructor stub
 		this.inflater = LayoutInflater.from(context);
 		this.currentPage = currentPage;
-		mFaceMap = XXApp.getInstance().getFaceMap();
+		mFaceMap = XChatApp.getInstance().getFaceMap();
 		initData();
 	}
 
@@ -37,7 +37,7 @@ public class FaceAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return XXApp.NUM + 1;
+		return XChatApp.NUM + 1;
 	}
 
 	@Override
@@ -64,11 +64,11 @@ public class FaceAdapter extends BaseAdapter {
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
-		if (position == XXApp.NUM) {
+		if (position == XChatApp.NUM) {
 			viewHolder.faceIV.setImageResource(R.drawable.emotion_del_selector);
 			viewHolder.faceIV.setBackgroundDrawable(null);
 		} else {
-			int count = XXApp.NUM * currentPage + position;
+			int count = XChatApp.NUM * currentPage + position;
 			if (count < 107) {
 				viewHolder.faceIV.setImageResource(faceList.get(count));
 			} else {

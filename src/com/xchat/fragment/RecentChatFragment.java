@@ -22,7 +22,7 @@ import com.xchat.activity.R;
 import com.xchat.adapter.RecentChatAdapter;
 import com.xchat.db.ChatProvider;
 import com.xchat.db.ChatProvider.ChatConstants;
-import com.xchat.service.XXService;
+import com.xchat.service.XChatService;
 import com.xchat.swipelistview.BaseSwipeListViewListener;
 import com.xchat.swipelistview.SwipeListView;
 import com.xchat.util.L;
@@ -141,7 +141,7 @@ public class RecentChatFragment extends Fragment implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.ivTitleBtnRightImage:
-			XXService xxService = mFragmentCallBack.getService();
+			XChatService xxService = mFragmentCallBack.getService();
 			if (xxService == null || !xxService.isAuthenticated()) {
 				return;
 			}

@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.xchat.activity"
     android:versionCode="1"
-    android:versionName="@string/app_version" >
+    android:versionName="V1.0.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="18" />
+        android:minSdkVersion="11"
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -17,7 +17,8 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
 
     <application
-        android:name="com.xchat.app.XXApp"
+        android:allowBackup="true"
+        android:name="com.xchat.app.XChatApp"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Default.NoTitleBar" >
@@ -85,22 +86,23 @@
             android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
 
-        <service android:name="com.xchat.service.XXService" />
+        <service android:name="com.xchat.service.XChatService" />
 
-        <receiver android:name="com.xchat.app.XXBroadcastReceiver" >
+        <receiver android:name="com.xchat.app.XChatBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_SHUTDOWN" />
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-
+        <!-- 
         <provider
             android:name="com.xchat.db.ChatProvider"
             android:authorities="com.xchat.activity.provider.Chats" />
         <provider
             android:name="com.xchat.db.RosterProvider"
             android:authorities="com.xchat.activity.provider.Roster" />
+         -->
     </application>
 
 </manifest>

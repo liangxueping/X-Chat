@@ -49,12 +49,12 @@ import android.widget.TextView;
 import com.xchat.adapter.ChatAdapter;
 import com.xchat.adapter.FaceAdapter;
 import com.xchat.adapter.FacePageAdeapter;
-import com.xchat.app.XXApp;
+import com.xchat.app.XChatApp;
 import com.xchat.db.ChatProvider;
 import com.xchat.db.ChatProvider.ChatConstants;
 import com.xchat.db.RosterProvider;
 import com.xchat.service.IConnectionStatusCallback;
-import com.xchat.service.XXService;
+import com.xchat.service.XChatService;
 import com.xchat.swipeback.SwipeBackActivity;
 import com.xchat.util.L;
 import com.xchat.util.PreferenceConstants;
@@ -92,12 +92,12 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 			ChatProvider.ChatConstants.DELIVERY_STATUS };// 查询字段
 
 	private ContentObserver mContactObserver = new ContactObserver();// 联系人数据监听，主要是监听对方在线状态
-	private XXService mXxService;// Main服务
+	private XChatService mXxService;// Main服务
 	ServiceConnection mServiceConnection = new ServiceConnection() {
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			mXxService = ((XXService.XXBinder) service).getService();
+			mXxService = ((XChatService.XXBinder) service).getService();
 			mXxService.registerConnectionStatusCallback(ChatActivity.this);
 			// 如果没有连接上，则重新连接xmpp服务器
 			if (!mXxService.isAuthenticated()) {
@@ -132,7 +132,7 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 	 * 绑定服务
 	 */
 	private void bindXMPPService() {
-		Intent mServiceIntent = new Intent(this, XXService.class);
+		Intent mServiceIntent = new Intent(this, XChatService.class);
 		Uri chatURI = Uri.parse(mWithJabberID);
 		mServiceIntent.setData(chatURI);
 		bindService(mServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
@@ -234,7 +234,7 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 	private void initData() {
 		mWithJabberID = getIntent().getDataString().toLowerCase();// 获取聊天对象的id
 		// 将表情map的key保存在数组中
-		Set<String> keySet = XXApp.getInstance().getFaceMap().keySet();
+		Set<String> keySet = XChatApp.getInstance().getFaceMap().keySet();
 		mFaceMapKeys = new ArrayList<String>();
 		mFaceMapKeys.addAll(keySet);
 	}
@@ -415,7 +415,7 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 	private void initFacePage() {
 		// TODO Auto-generated method stub
 		List<View> lv = new ArrayList<View>();
-		for (int i = 0; i < XXApp.NUM_PAGE; ++i)
+		for (int i = 0; i < XChatApp.NUM_PAGE; ++i)
 			lv.add(getGridView(i));
 		FacePageAdeapter adapter = new FacePageAdeapter(lv);
 		mFaceViewPager.setAdapter(adapter);
@@ -464,7 +464,7 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				// TODO Auto-generated method stub
-				if (arg2 == XXApp.NUM) {// 删除键的位置
+				if (arg2 == XChatApp.NUM) {// 删除键的位置
 					int selection = mChatEditText.getSelectionStart();
 					String text = mChatEditText.getText().toString();
 					if (selection > 0) {
@@ -479,7 +479,7 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 								.delete(selection - 1, selection);
 					}
 				} else {
-					int count = mCurrentPage * XXApp.NUM + arg2;
+					int count = mCurrentPage * XChatApp.NUM + arg2;
 					// 注释的部分，在EditText中显示字符串
 					// String ori = msgEt.getText().toString();
 					// int index = msgEt.getSelectionStart();
@@ -490,7 +490,7 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 
 					// 下面这部分，在EditText中显示表情
 					Bitmap bitmap = BitmapFactory.decodeResource(
-							getResources(), (Integer) XXApp.getInstance()
+							getResources(), (Integer) XChatApp.getInstance()
 									.getFaceMap().values().toArray()[count]);
 					if (bitmap != null) {
 						int rawHeigh = bitmap.getHeight();

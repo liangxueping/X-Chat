@@ -35,8 +35,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.xchat.adapter.RosterAdapter;
-import com.xchat.app.XXBroadcastReceiver;
-import com.xchat.app.XXBroadcastReceiver.EventHandler;
+import com.xchat.app.XChatBroadcastReceiver;
+import com.xchat.app.XChatBroadcastReceiver.EventHandler;
 import com.xchat.db.ChatProvider;
 import com.xchat.db.RosterProvider;
 import com.xchat.db.RosterProvider.RosterConstants;
@@ -50,7 +50,7 @@ import com.xchat.quickaction.ActionItem;
 import com.xchat.quickaction.QuickAction;
 import com.xchat.quickaction.QuickAction.OnActionItemClickListener;
 import com.xchat.service.IConnectionStatusCallback;
-import com.xchat.service.XXService;
+import com.xchat.service.XChatService;
 import com.xchat.slidingmenu.BaseSlidingFragmentActivity;
 import com.xchat.slidingmenu.SlidingMenu;
 import com.xchat.util.L;
@@ -83,7 +83,7 @@ public class MainActivity extends BaseSlidingFragmentActivity implements
 		mStatusMap.put(PreferenceConstants.CHAT, R.drawable.status_qme);
 	}
 	private Handler mainHandler = new Handler();
-	private XXService mXxService;
+	private XChatService mXxService;
 	private SlidingMenu mSlidingMenu;
 	private View mNetErrorView;
 	private TextView mTitleNameView;
@@ -99,7 +99,7 @@ public class MainActivity extends BaseSlidingFragmentActivity implements
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			mXxService = ((XXService.XXBinder) service).getService();
+			mXxService = ((XChatService.XXBinder) service).getService();
 			mXxService.registerConnectionStatusCallback(MainActivity.this);
 			// 开始连接xmpp服务器
 			if (!mXxService.isAuthenticated()) {
@@ -132,7 +132,7 @@ public class MainActivity extends BaseSlidingFragmentActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		startService(new Intent(MainActivity.this, XXService.class));
+		startService(new Intent(MainActivity.this, XChatService.class));
 
 		initSlidingMenu();
 		setContentView(R.layout.main_center_layout);
@@ -163,7 +163,7 @@ public class MainActivity extends BaseSlidingFragmentActivity implements
 				RosterProvider.CONTENT_URI, true, mRosterObserver);
 		setStatusImage(isConnected());
 		mRosterAdapter.requery();
-		XXBroadcastReceiver.mListeners.add(this);
+		XChatBroadcastReceiver.mListeners.add(this);
 		if (NetUtil.getNetworkState(this) == NetUtil.NETWORN_NONE)
 			mNetErrorView.setVisibility(View.VISIBLE);
 		else
@@ -175,7 +175,7 @@ public class MainActivity extends BaseSlidingFragmentActivity implements
 		super.onPause();
 		getContentResolver().unregisterContentObserver(mRosterObserver);
 		unbindXMPPService();
-		XXBroadcastReceiver.mListeners.remove(this);
+		XChatBroadcastReceiver.mListeners.remove(this);
 	}
 
 	@Override
@@ -202,7 +202,7 @@ public class MainActivity extends BaseSlidingFragmentActivity implements
 
 	private void bindXMPPService() {
 		L.i(LoginActivity.class, "[SERVICE] Unbind");
-		bindService(new Intent(MainActivity.this, XXService.class),
+		bindService(new Intent(MainActivity.this, XChatService.class),
 				mServiceConnection, Context.BIND_AUTO_CREATE
 						+ Context.BIND_DEBUG_UNBIND);
 	}
@@ -735,7 +735,7 @@ public class MainActivity extends BaseSlidingFragmentActivity implements
 	@Override
 	public void connectionStatusChanged(int connectedState, String reason) {
 		switch (connectedState) {
-		case XXService.CONNECTED:
+		case XChatService.CONNECTED:
 			mTitleNameView.setText(XMPPHelper.splitJidAndServer(PreferenceUtils
 					.getPrefString(MainActivity.this,
 							PreferenceConstants.ACCOUNT, "")));
@@ -743,12 +743,12 @@ public class MainActivity extends BaseSlidingFragmentActivity implements
 			// mTitleStatusView.setVisibility(View.GONE);
 			setStatusImage(true);
 			break;
-		case XXService.CONNECTING:
+		case XChatService.CONNECTING:
 			mTitleNameView.setText(R.string.login_prompt_msg);
 			mTitleProgressBar.setVisibility(View.VISIBLE);
 			mTitleStatusView.setVisibility(View.GONE);
 			break;
-		case XXService.DISCONNECTED:
+		case XChatService.DISCONNECTED:
 			mTitleNameView.setText(R.string.login_prompt_no);
 			mTitleProgressBar.setVisibility(View.GONE);
 			mTitleStatusView.setVisibility(View.GONE);
@@ -761,7 +761,7 @@ public class MainActivity extends BaseSlidingFragmentActivity implements
 	}
 
 	@Override
-	public XXService getService() {
+	public XChatService getService() {
 		return mXxService;
 	}
 

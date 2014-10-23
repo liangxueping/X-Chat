@@ -22,7 +22,7 @@ import com.xchat.activity.FragmentCallBack;
 import com.xchat.activity.LoginActivity;
 import com.xchat.activity.MainActivity;
 import com.xchat.activity.R;
-import com.xchat.service.XXService;
+import com.xchat.service.XChatService;
 import com.xchat.switcher.Switch;
 import com.xchat.util.DialogUtil;
 import com.xchat.util.PreferenceConstants;
@@ -242,7 +242,7 @@ public class SettingsFragment extends Fragment implements OnClickListener,
 				mExitDialog.dismiss();
 			break;
 		case R.id.btn_exit_comfirm:
-			XXService service = mFragmentCallBack.getService();
+			XChatService service = mFragmentCallBack.getService();
 			if (service != null) {
 				service.logout();// 注销
 				service.stopSelf();// 停止服务
@@ -270,7 +270,7 @@ public class SettingsFragment extends Fragment implements OnClickListener,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int which) {
-								XXService service = mFragmentCallBack
+								XChatService service = mFragmentCallBack
 										.getService();
 								if (service != null) {
 									service.logout();// 注销

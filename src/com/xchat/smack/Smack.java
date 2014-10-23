@@ -1,24 +1,24 @@
 package com.xchat.smack;
 
-import com.xchat.exception.XXException;
+import com.xchat.exception.XChatException;
 
 public interface Smack {
-	public boolean login(String account, String password) throws XXException;
+	public boolean login(String account, String password) throws XChatException;
 
 	public boolean logout();
 
 	public boolean isAuthenticated();
 
 	public void addRosterItem(String user, String alias, String group)
-			throws XXException;
+			throws XChatException;
 
-	public void removeRosterItem(String user) throws XXException;
+	public void removeRosterItem(String user) throws XChatException;
 
 	public void renameRosterItem(String user, String newName)
-			throws XXException;
+			throws XChatException;
 
 	public void moveRosterItemToGroup(String user, String group)
-			throws XXException;
+			throws XChatException;
 
 	public void renameRosterGroup(String group, String newGroup);
 

@@ -1,9 +1,9 @@
 package com.xchat.activity;
 
-import com.xchat.service.XXService;
+import com.xchat.service.XChatService;
 
 public interface FragmentCallBack {
-	public XXService getService();
+	public XChatService getService();
 
 	public MainActivity getMainActivity();
 }

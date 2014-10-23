@@ -52,8 +52,8 @@ import com.xchat.db.ChatProvider;
 import com.xchat.db.ChatProvider.ChatConstants;
 import com.xchat.db.RosterProvider;
 import com.xchat.db.RosterProvider.RosterConstants;
-import com.xchat.exception.XXException;
-import com.xchat.service.XXService;
+import com.xchat.exception.XChatException;
+import com.xchat.service.XChatService;
 import com.xchat.util.L;
 import com.xchat.util.PreferenceConstants;
 import com.xchat.util.PreferenceUtils;
@@ -107,7 +107,7 @@ public class SmackImpl implements Smack {
 
 	private ConnectionConfiguration mXMPPConfig;
 	private XMPPConnection mXMPPConnection;
-	private XXService mService;
+	private XChatService mService;
 	private Roster mRoster;
 	private final ContentResolver mContentResolver;
 	private RosterListener mRosterListener;
@@ -129,21 +129,14 @@ public class SmackImpl implements Smack {
 
 	// ping-pong服务器
 
-	public SmackImpl(XXService service) {
-		String customServer = PreferenceUtils.getPrefString(service,
-				PreferenceConstants.CUSTOM_SERVER, "");
-		int port = PreferenceUtils.getPrefInt(service,
-				PreferenceConstants.PORT, PreferenceConstants.DEFAULT_PORT_INT);
-		String server = PreferenceUtils.getPrefString(service,
-				PreferenceConstants.Server, PreferenceConstants.GMAIL_SERVER);
-		boolean smackdebug = PreferenceUtils.getPrefBoolean(service,
-				PreferenceConstants.SMACKDEBUG, false);
-		boolean requireSsl = PreferenceUtils.getPrefBoolean(service,
-				PreferenceConstants.REQUIRE_TLS, false);
-		if (customServer.length() > 0
-				|| port != PreferenceConstants.DEFAULT_PORT_INT)
-			this.mXMPPConfig = new ConnectionConfiguration(customServer, port,
-					server);
+	public SmackImpl(XChatService service) {
+		String customServer = PreferenceUtils.getPrefString(service, PreferenceConstants.CUSTOM_SERVER, "");
+		int port = PreferenceUtils.getPrefInt(service, PreferenceConstants.PORT, PreferenceConstants.DEFAULT_PORT_INT);
+		String server = PreferenceUtils.getPrefString(service, PreferenceConstants.Server, PreferenceConstants.GMAIL_SERVER);
+		boolean smackdebug = PreferenceUtils.getPrefBoolean(service, PreferenceConstants.SMACKDEBUG, false);
+		boolean requireSsl = PreferenceUtils.getPrefBoolean(service, PreferenceConstants.REQUIRE_TLS, false);
+		if (customServer.length() > 0 || port != PreferenceConstants.DEFAULT_PORT_INT)
+			this.mXMPPConfig = new ConnectionConfiguration(customServer, port, server);
 		else
 			this.mXMPPConfig = new ConnectionConfiguration(server); // use SRV
 
@@ -152,8 +145,7 @@ public class SmackImpl implements Smack {
 		this.mXMPPConfig.setCompressionEnabled(false); // disable for now
 		this.mXMPPConfig.setDebuggerEnabled(smackdebug);
 		if (requireSsl)
-			this.mXMPPConfig
-					.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
+			this.mXMPPConfig.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
 
 		this.mXMPPConnection = new XMPPConnection(mXMPPConfig);
 		this.mService = service;
@@ -161,7 +153,7 @@ public class SmackImpl implements Smack {
 	}
 
 	@Override
-	public boolean login(String account, String password) throws XXException {
+	public boolean login(String account, String password) throws XChatException {
 		try {
 			if (mXMPPConnection.isConnected()) {
 				try {
@@ -176,7 +168,7 @@ public class SmackImpl implements Smack {
 			registerRosterListener();// 监听联系人动态变化
 			mXMPPConnection.connect();
 			if (!mXMPPConnection.isConnected()) {
-				throw new XXException("SMACK connect failed without exception!");
+				throw new XChatException("SMACK connect failed without exception!");
 			}
 			mXMPPConnection.addConnectionListener(new ConnectionListener() {
 				public void connectionClosedOnError(Exception e) {
@@ -205,12 +197,12 @@ public class SmackImpl implements Smack {
 			setStatusFromConfig();// 更新在线状态
 
 		} catch (XMPPException e) {
-			throw new XXException(e.getLocalizedMessage(),
+			throw new XChatException(e.getLocalizedMessage(),
 					e.getWrappedThrowable());
 		} catch (Exception e) {
 			// actually we just care for IllegalState or NullPointer or XMPPEx.
 			L.e(SmackImpl.class, "login(): " + Log.getStackTraceString(e));
-			throw new XXException(e.getLocalizedMessage(), e.getCause());
+			throw new XChatException(e.getLocalizedMessage(), e.getCause());
 		}
 		registerAllListener();// 注册监听其他的事件，比如新消息
 		return mXMPPConnection.isAuthenticated();
@@ -434,7 +426,7 @@ public class SmackImpl implements Smack {
 	private class PongTimeoutAlarmReceiver extends BroadcastReceiver {
 		public void onReceive(Context ctx, Intent i) {
 			L.d("Ping: timeout for " + mPingID);
-			mService.postConnectionFailed(XXService.PONG_TIMEOUT);
+			mService.postConnectionFailed(XChatService.PONG_TIMEOUT);
 			logout();// 超时就断开连接
 		}
 	}
@@ -455,45 +447,45 @@ public class SmackImpl implements Smack {
 
 	/***************** start 发送离线消息 ***********************/
 	public void sendOfflineMessages() {
-		Cursor cursor = mContentResolver.query(ChatProvider.CONTENT_URI,
-				SEND_OFFLINE_PROJECTION, SEND_OFFLINE_SELECTION, null, null);
-		final int _ID_COL = cursor.getColumnIndexOrThrow(ChatConstants._ID);
-		final int JID_COL = cursor.getColumnIndexOrThrow(ChatConstants.JID);
-		final int MSG_COL = cursor.getColumnIndexOrThrow(ChatConstants.MESSAGE);
-		final int TS_COL = cursor.getColumnIndexOrThrow(ChatConstants.DATE);
-		final int PACKETID_COL = cursor
-				.getColumnIndexOrThrow(ChatConstants.PACKET_ID);
-		ContentValues mark_sent = new ContentValues();
-		mark_sent.put(ChatConstants.DELIVERY_STATUS,
-				ChatConstants.DS_SENT_OR_READ);
-		while (cursor.moveToNext()) {
-			int _id = cursor.getInt(_ID_COL);
-			String toJID = cursor.getString(JID_COL);
-			String message = cursor.getString(MSG_COL);
-			String packetID = cursor.getString(PACKETID_COL);
-			long ts = cursor.getLong(TS_COL);
-			L.d("sendOfflineMessages: " + toJID + " > " + message);
-			final Message newMessage = new Message(toJID, Message.Type.chat);
-			newMessage.setBody(message);
-			DelayInformation delay = new DelayInformation(new Date(ts));
-			newMessage.addExtension(delay);
-			newMessage.addExtension(new DelayInfo(delay));
-			newMessage.addExtension(new DeliveryReceiptRequest());
-			if ((packetID != null) && (packetID.length() > 0)) {
-				newMessage.setPacketID(packetID);
-			} else {
-				packetID = newMessage.getPacketID();
-				mark_sent.put(ChatConstants.PACKET_ID, packetID);
+		Cursor cursor = mContentResolver.query(ChatProvider.CONTENT_URI, SEND_OFFLINE_PROJECTION, SEND_OFFLINE_SELECTION, null, null);
+		if(cursor != null){
+
+			final int _ID_COL = cursor.getColumnIndexOrThrow(ChatConstants._ID);
+			final int JID_COL = cursor.getColumnIndexOrThrow(ChatConstants.JID);
+			final int MSG_COL = cursor.getColumnIndexOrThrow(ChatConstants.MESSAGE);
+			final int TS_COL = cursor.getColumnIndexOrThrow(ChatConstants.DATE);
+			final int PACKETID_COL = cursor.getColumnIndexOrThrow(ChatConstants.PACKET_ID);
+			ContentValues mark_sent = new ContentValues();
+			mark_sent.put(ChatConstants.DELIVERY_STATUS, ChatConstants.DS_SENT_OR_READ);
+			while (cursor.moveToNext()) {
+				int _id = cursor.getInt(_ID_COL);
+				String toJID = cursor.getString(JID_COL);
+				String message = cursor.getString(MSG_COL);
+				String packetID = cursor.getString(PACKETID_COL);
+				long ts = cursor.getLong(TS_COL);
+				L.d("sendOfflineMessages: " + toJID + " > " + message);
+				final Message newMessage = new Message(toJID, Message.Type.chat);
+				newMessage.setBody(message);
+				DelayInformation delay = new DelayInformation(new Date(ts));
+				newMessage.addExtension(delay);
+				newMessage.addExtension(new DelayInfo(delay));
+				newMessage.addExtension(new DeliveryReceiptRequest());
+				if ((packetID != null) && (packetID.length() > 0)) {
+					newMessage.setPacketID(packetID);
+				} else {
+					packetID = newMessage.getPacketID();
+					mark_sent.put(ChatConstants.PACKET_ID, packetID);
+				}
+				Uri rowuri = Uri.parse("content://" + ChatProvider.AUTHORITY + "/"
+						+ ChatProvider.TABLE_NAME + "/" + _id);
+				mContentResolver.update(rowuri, mark_sent, null, null);
+				mXMPPConnection.sendPacket(newMessage); // must be after marking
+														// delivered, otherwise it
+														// may override the
+														// SendFailListener
 			}
-			Uri rowuri = Uri.parse("content://" + ChatProvider.AUTHORITY + "/"
-					+ ChatProvider.TABLE_NAME + "/" + _id);
-			mContentResolver.update(rowuri, mark_sent, null, null);
-			mXMPPConnection.sendPacket(newMessage); // must be after marking
-													// delivered, otherwise it
-													// may override the
-													// SendFailListener
+			cursor.close();
 		}
-		cursor.close();
 	}
 
 	public static void sendOfflineMessage(ContentResolver cr, String toJID,
@@ -699,23 +691,23 @@ public class SmackImpl implements Smack {
 
 	@Override
 	public void addRosterItem(String user, String alias, String group)
-			throws XXException {
+			throws XChatException {
 		// TODO Auto-generated method stub
 		addRosterEntry(user, alias, group);
 	}
 
 	private void addRosterEntry(String user, String alias, String group)
-			throws XXException {
+			throws XChatException {
 		mRoster = mXMPPConnection.getRoster();
 		try {
 			mRoster.createEntry(user, alias, new String[] { group });
 		} catch (XMPPException e) {
-			throw new XXException(e.getLocalizedMessage());
+			throw new XChatException(e.getLocalizedMessage());
 		}
 	}
 
 	@Override
-	public void removeRosterItem(String user) throws XXException {
+	public void removeRosterItem(String user) throws XChatException {
 		// TODO Auto-generated method stub
 		L.d("removeRosterItem(" + user + ")");
 
@@ -723,7 +715,7 @@ public class SmackImpl implements Smack {
 		mService.rosterChanged();
 	}
 
-	private void removeRosterEntry(String user) throws XXException {
+	private void removeRosterEntry(String user) throws XChatException {
 		mRoster = mXMPPConnection.getRoster();
 		try {
 			RosterEntry rosterEntry = mRoster.getEntry(user);
@@ -732,32 +724,32 @@ public class SmackImpl implements Smack {
 				mRoster.removeEntry(rosterEntry);
 			}
 		} catch (XMPPException e) {
-			throw new XXException(e.getLocalizedMessage());
+			throw new XChatException(e.getLocalizedMessage());
 		}
 	}
 
 	@Override
 	public void renameRosterItem(String user, String newName)
-			throws XXException {
+			throws XChatException {
 		// TODO Auto-generated method stub
 		mRoster = mXMPPConnection.getRoster();
 		RosterEntry rosterEntry = mRoster.getEntry(user);
 
 		if (!(newName.length() > 0) || (rosterEntry == null)) {
-			throw new XXException("JabberID to rename is invalid!");
+			throw new XChatException("JabberID to rename is invalid!");
 		}
 		rosterEntry.setName(newName);
 	}
 
 	@Override
 	public void moveRosterItemToGroup(String user, String group)
-			throws XXException {
+			throws XChatException {
 		// TODO Auto-generated method stub
 		tryToMoveRosterEntryToGroup(user, group);
 	}
 
 	private void tryToMoveRosterEntryToGroup(String userName, String groupName)
-			throws XXException {
+			throws XChatException {
 
 		mRoster = mXMPPConnection.getRoster();
 		RosterGroup rosterGroup = getRosterGroup(groupName);
@@ -771,13 +763,13 @@ public class SmackImpl implements Smack {
 			try {
 				rosterGroup.addEntry(rosterEntry);
 			} catch (XMPPException e) {
-				throw new XXException(e.getLocalizedMessage());
+				throw new XChatException(e.getLocalizedMessage());
 			}
 		}
 	}
 
 	private void removeRosterEntryFromGroups(RosterEntry rosterEntry)
-			throws XXException {
+			throws XChatException {
 		Collection<RosterGroup> oldGroups = rosterEntry.getGroups();
 
 		for (RosterGroup group : oldGroups) {
@@ -786,11 +778,11 @@ public class SmackImpl implements Smack {
 	}
 
 	private void tryToRemoveUserFromGroup(RosterGroup group,
-			RosterEntry rosterEntry) throws XXException {
+			RosterEntry rosterEntry) throws XChatException {
 		try {
 			group.removeEntry(rosterEntry);
 		} catch (XMPPException e) {
-			throw new XXException(e.getLocalizedMessage());
+			throw new XChatException(e.getLocalizedMessage());
 		}
 	}
 

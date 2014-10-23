@@ -23,9 +23,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.xchat.exception.XXAdressMalformedException;
+import com.xchat.exception.XChatAdressMalformedException;
 import com.xchat.service.IConnectionStatusCallback;
-import com.xchat.service.XXService;
+import com.xchat.service.XChatService;
 import com.xchat.util.DialogUtil;
 import com.xchat.util.L;
 import com.xchat.util.PreferenceConstants;
@@ -45,7 +45,7 @@ public class LoginActivity extends FragmentActivity implements
 	private CheckBox mHideLoginCK;
 	private CheckBox mUseTlsCK;
 	private CheckBox mSilenceLoginCK;
-	private XXService mXxService;
+	private XChatService mXxService;
 	private Dialog mLoginDialog;
 	private ConnectionOutTimeProcess mLoginOutTimeProcess;
 	private String mAccount;
@@ -78,7 +78,7 @@ public class LoginActivity extends FragmentActivity implements
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			mXxService = ((XXService.XXBinder) service).getService();
+			mXxService = ((XChatService.XXBinder) service).getService();
 			mXxService.registerConnectionStatusCallback(LoginActivity.this);
 			// 开始连接xmpp服务器
 		}
@@ -94,7 +94,7 @@ public class LoginActivity extends FragmentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		startService(new Intent(LoginActivity.this, XXService.class));
+		startService(new Intent(LoginActivity.this, XChatService.class));
 		bindXMPPService();
 		setContentView(R.layout.loginpage);
 		initView();
@@ -178,10 +178,10 @@ public class LoginActivity extends FragmentActivity implements
 	}
 
 	private String splitAndSaveServer(String account) {
-		if (!account.contains("@"))
-			return account;
-		String customServer = PreferenceUtils.getPrefString(this,
-				PreferenceConstants.CUSTOM_SERVER, "");
+		if (!account.contains("@")){
+			account += "@" + PreferenceConstants.HOST_SERVER;
+		}
+		String customServer = PreferenceUtils.getPrefString(this, PreferenceConstants.CUSTOM_SERVER, "");
 		String[] res = account.split("@");
 		String userName = res[0];
 		String server = res[1];
@@ -208,15 +208,14 @@ public class LoginActivity extends FragmentActivity implements
 
 	private void bindXMPPService() {
 		L.i(LoginActivity.class, "[SERVICE] Unbind");
-		Intent mServiceIntent = new Intent(this, XXService.class);
+		Intent mServiceIntent = new Intent(this, XChatService.class);
 		mServiceIntent.setAction(LOGIN_ACTION);
 		bindService(mServiceIntent, mServiceConnection,
 				Context.BIND_AUTO_CREATE + Context.BIND_DEBUG_UNBIND);
 	}
 
 	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count,
-			int after) {
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 	}
 
 	@Override
@@ -229,7 +228,7 @@ public class LoginActivity extends FragmentActivity implements
 			XMPPHelper.verifyJabberID(s);
 			mLoginBtn.setEnabled(true);
 			mAccountEt.setTextColor(Color.parseColor("#ff333333"));
-		} catch (XXAdressMalformedException e) {
+		} catch (XChatAdressMalformedException e) {
 			mLoginBtn.setEnabled(false);
 			mAccountEt.setTextColor(Color.RED);
 		}
@@ -240,26 +239,18 @@ public class LoginActivity extends FragmentActivity implements
 		boolean isUseTls = mUseTlsCK.isChecked();
 		boolean isSilenceLogin = mSilenceLoginCK.isChecked();
 		boolean isHideLogin = mHideLoginCK.isChecked();
-		PreferenceUtils.setPrefString(this, PreferenceConstants.ACCOUNT,
-				mAccount);// 帐号是一直保存的
+		PreferenceUtils.setPrefString(this, PreferenceConstants.ACCOUNT, mAccount);// 帐号是一直保存的
 		if (isAutoSavePassword)
-			PreferenceUtils.setPrefString(this, PreferenceConstants.PASSWORD,
-					mPassword);
+			PreferenceUtils.setPrefString(this, PreferenceConstants.PASSWORD, mPassword);
 		else
-			PreferenceUtils.setPrefString(this, PreferenceConstants.PASSWORD,
-					"");
+			PreferenceUtils.setPrefString(this, PreferenceConstants.PASSWORD, "");
 
-		PreferenceUtils.setPrefBoolean(this, PreferenceConstants.REQUIRE_TLS,
-				isUseTls);
-		PreferenceUtils.setPrefBoolean(this, PreferenceConstants.SCLIENTNOTIFY,
-				isSilenceLogin);
+		PreferenceUtils.setPrefBoolean(this, PreferenceConstants.REQUIRE_TLS, isUseTls);
+		PreferenceUtils.setPrefBoolean(this, PreferenceConstants.SCLIENTNOTIFY, isSilenceLogin);
 		if (isHideLogin)
-			PreferenceUtils.setPrefString(this,
-					PreferenceConstants.STATUS_MODE, PreferenceConstants.XA);
+			PreferenceUtils.setPrefString(this, PreferenceConstants.STATUS_MODE, PreferenceConstants.XA);
 		else
-			PreferenceUtils.setPrefString(this,
-					PreferenceConstants.STATUS_MODE,
-					PreferenceConstants.AVAILABLE);
+			PreferenceUtils.setPrefString(this, PreferenceConstants.STATUS_MODE, PreferenceConstants.AVAILABLE);
 	}
 
 	// 登录超时处理线程
@@ -314,11 +305,11 @@ public class LoginActivity extends FragmentActivity implements
 			mLoginOutTimeProcess.stop();
 			mLoginOutTimeProcess = null;
 		}
-		if (connectedState == XXService.CONNECTED) {
+		if (connectedState == XChatService.CONNECTED) {
 			save2Preferences();
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
-		} else if (connectedState == XXService.DISCONNECTED)
+		} else if (connectedState == XChatService.DISCONNECTED)
 			T.showLong(LoginActivity.this, getString(R.string.request_failed)
 					+ reason);
 	}
