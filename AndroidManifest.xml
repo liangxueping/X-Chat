@@ -103,6 +103,12 @@
             android:name="com.xchat.db.RosterProvider"
             android:authorities="com.xchat.activity.provider.Roster" />
          -->
+         <provider
+            android:name="com.xchat.db.ChatProvider"
+            android:authorities="com.way.xx.provider.Chats" />
+        <provider
+            android:name="com.xchat.db.RosterProvider"
+            android:authorities="com.way.xx.provider.Roster" />
     </application>
 
 </manifest>
