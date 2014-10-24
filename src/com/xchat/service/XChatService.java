@@ -54,7 +54,7 @@ public class XChatService extends BaseService implements EventHandler,
 	// 自动重连 start
 	private static final int RECONNECT_AFTER = 5;
 	private static final int RECONNECT_MAXIMUM = 10 * 60;// 最大重连时间间隔
-	private static final String RECONNECT_ALARM = "com.way.xx.RECONNECT_ALARM";
+	private static final String RECONNECT_ALARM = "com.xchat.RECONNECT_ALARM";
 	// private boolean mIsNeedReConnection = false; // 是否需要重连
 	private int mConnectedState = DISCONNECTED; // 是否已经连接
 	private int mReconnectTimeout = RECONNECT_AFTER;
@@ -182,7 +182,7 @@ public class XChatService extends BaseService implements EventHandler,
 			@Override
 			public void run() {
 				try {
-					postConnecting();
+					//postConnecting();
 					mSmackable = new SmackImpl(XChatService.this);
 					if (mSmackable.login(account, password)) {
 						// 登陆成功
@@ -399,20 +399,20 @@ public class XChatService extends BaseService implements EventHandler,
 	}
 
 	// 连接中，通知界面线程做一些处理
-	private void postConnecting() {
-		mMainHandler.post(new Runnable() {
-			public void run() {
-				connecting();
-			}
-		});
-	}
+//	private void postConnecting() {
+//		mMainHandler.post(new Runnable() {
+//			public void run() {
+//				connecting();
+//			}
+//		});
+//	}
 
-	private void connecting() {
-		mConnectedState = CONNECTING;// 连接中
-		if (mConnectionStatusCallback != null)
-			mConnectionStatusCallback.connectionStatusChanged(mConnectedState,
-					"");
-	}
+//	private void connecting() {
+//		mConnectedState = CONNECTING;// 连接中
+//		if (mConnectionStatusCallback != null)
+//			mConnectionStatusCallback.connectionStatusChanged(mConnectedState,
+//					"");
+//	}
 
 	// 收到新消息
 	public void newMessage(final String from, final String message) {

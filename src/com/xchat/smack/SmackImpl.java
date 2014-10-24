@@ -120,8 +120,8 @@ public class SmackImpl implements Smack {
 	private long mPingTimestamp;
 	private PendingIntent mPingAlarmPendIntent;
 	private PendingIntent mPongTimeoutAlarmPendIntent;
-	private static final String PING_ALARM = "com.way.xx.PING_ALARM";
-	private static final String PONG_TIMEOUT_ALARM = "com.way.xx.PONG_TIMEOUT_ALARM";
+	private static final String PING_ALARM = "com.xchat.PING_ALARM";
+	private static final String PONG_TIMEOUT_ALARM = "com.xchat.PONG_TIMEOUT_ALARM";
 	private Intent mPingAlarmIntent = new Intent(PING_ALARM);
 	private Intent mPongTimeoutAlarmIntent = new Intent(PONG_TIMEOUT_ALARM);
 	private PongTimeoutAlarmReceiver mPongTimeoutAlarmReceiver = new PongTimeoutAlarmReceiver();

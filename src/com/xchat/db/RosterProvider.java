@@ -22,7 +22,7 @@ import com.xchat.util.L;
 
 public class RosterProvider extends ContentProvider {
 
-	public static final String AUTHORITY = "com.way.xx.provider.Roster";
+	public static final String AUTHORITY = "com.xchat.provider.Roster";
 	public static final String TABLE_ROSTER = "roster";
 	public static final String TABLE_GROUPS = "groups";
 	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY

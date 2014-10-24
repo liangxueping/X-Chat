@@ -36,7 +36,7 @@ import com.xchat.util.XMPPHelper;
 @SuppressLint("HandlerLeak")
 public class LoginActivity extends FragmentActivity implements
 		IConnectionStatusCallback, TextWatcher {
-	public static final String LOGIN_ACTION = "com.way.action.LOGIN";
+	public static final String LOGIN_ACTION = "com.xchat.action.LOGIN";
 	private static final int LOGIN_OUT_TIME = 0;
 	private Button mLoginBtn;
 	private EditText mAccountEt;
@@ -310,7 +310,6 @@ public class LoginActivity extends FragmentActivity implements
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
 		} else if (connectedState == XChatService.DISCONNECTED)
-			T.showLong(LoginActivity.this, getString(R.string.request_failed)
-					+ reason);
+			T.showLong(LoginActivity.this, getString(R.string.request_failed) + reason);
 	}
 }

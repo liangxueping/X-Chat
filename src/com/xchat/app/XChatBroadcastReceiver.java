@@ -14,7 +14,7 @@ import com.xchat.util.PreferenceConstants;
 import com.xchat.util.PreferenceUtils;
 
 public class XChatBroadcastReceiver extends BroadcastReceiver {
-	public static final String BOOT_COMPLETED_ACTION = "com.way.action.BOOT_COMPLETED";
+	public static final String BOOT_COMPLETED_ACTION = "com.xchat.action.BOOT_COMPLETED";
 	public static ArrayList<EventHandler> mListeners = new ArrayList<EventHandler>();
 
 	@Override

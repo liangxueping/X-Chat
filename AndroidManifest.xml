@@ -105,10 +105,10 @@
          -->
          <provider
             android:name="com.xchat.db.ChatProvider"
-            android:authorities="com.way.xx.provider.Chats" />
+            android:authorities="com.xchat.provider.Chats" />
         <provider
             android:name="com.xchat.db.RosterProvider"
-            android:authorities="com.way.xx.provider.Roster" />
+            android:authorities="com.xchat.provider.Roster" />
     </application>
 
 </manifest>
