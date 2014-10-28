@@ -44,8 +44,7 @@ public class RecentChatAdapter extends SimpleCursorAdapter {
 
 	@SuppressWarnings("deprecation")
 	public void requery() {
-		Cursor cursor = mContentResolver.query(ChatProvider.CONTENT_URI, FROM,
-				SELECT, null, SORT_ORDER);
+		Cursor cursor = mContentResolver.query(ChatProvider.CONTENT_URI, FROM, SELECT, null, SORT_ORDER);
 		Cursor oldCursor = getCursor();
 		changeCursor(cursor);
 		mContext.stopManagingCursor(oldCursor);

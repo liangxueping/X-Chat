@@ -30,8 +30,7 @@ import com.xchat.util.StatusMode;
 public class RosterAdapter extends BaseExpandableListAdapter implements
 		IphoneTreeHeaderAdapter {
 	// 不在线状态
-	private static final String OFFLINE_EXCLUSION = RosterConstants.STATUS_MODE
-			+ " != " + StatusMode.offline.ordinal();
+	private static final String OFFLINE_EXCLUSION = RosterConstants.STATUS_MODE + " != " + StatusMode.offline.ordinal();
 	// 在线人数
 	private static final String COUNT_AVAILABLE_MEMBERS = "SELECT COUNT() FROM "
 			+ RosterProvider.TABLE_ROSTER
@@ -51,8 +50,8 @@ public class RosterAdapter extends BaseExpandableListAdapter implements
 	private static final String[] GROUPS_QUERY_COUNTED = new String[] {
 			RosterConstants._ID,
 			RosterConstants.GROUP,
-			"(" + COUNT_AVAILABLE_MEMBERS + ") || '/' || (" + COUNT_MEMBERS
-					+ ") AS members" };
+			"(" + COUNT_AVAILABLE_MEMBERS + ") || '/' || (" + COUNT_MEMBERS + ") AS members" 
+			};
 	// 联系人查询序列
 	private static final String[] ROSTER_QUERY = new String[] {
 			RosterConstants._ID, RosterConstants.JID, RosterConstants.ALIAS,
@@ -66,9 +65,7 @@ public class RosterAdapter extends BaseExpandableListAdapter implements
 	private HashMap<Integer, Integer> groupStatusMap;
 	private PullToRefreshScrollView mPullToRefreshScrollView;
 
-	public RosterAdapter(Context context, IphoneTreeView iphoneTreeView,
-			PullToRefreshScrollView pullToRefreshScrollView) {
-		// TODO Auto-generated constructor stub
+	public RosterAdapter(Context context, IphoneTreeView iphoneTreeView, PullToRefreshScrollView pullToRefreshScrollView) {
 		mContext = context;
 		mIphoneTreeView = iphoneTreeView;
 		mPullToRefreshScrollView = pullToRefreshScrollView;
@@ -76,28 +73,23 @@ public class RosterAdapter extends BaseExpandableListAdapter implements
 		mContentResolver = context.getContentResolver();
 		mGroupList = new ArrayList<Group>();
 		groupStatusMap = new HashMap<Integer, Integer>();
-		mIsShowOffline = PreferenceUtils.getPrefBoolean(mContext,
-				PreferenceConstants.SHOW_OFFLINE, true);
+		mIsShowOffline = PreferenceUtils.getPrefBoolean(mContext, PreferenceConstants.SHOW_OFFLINE, true);
 	}
 
 	public void requery() {
 		if (mGroupList != null && mGroupList.size() > 0)
 			mGroupList.clear();
 		// 是否显示在线人数
-		mIsShowOffline = PreferenceUtils.getPrefBoolean(mContext,
-				PreferenceConstants.SHOW_OFFLINE, true);
+		mIsShowOffline = PreferenceUtils.getPrefBoolean(mContext, PreferenceConstants.SHOW_OFFLINE, true);
 		String selectWhere = null;
 		if (!mIsShowOffline)
 			selectWhere = OFFLINE_EXCLUSION;
-		Cursor groupCursor = mContentResolver.query(RosterProvider.GROUPS_URI,
-				GROUPS_QUERY_COUNTED, selectWhere, null, RosterConstants.GROUP);
+		Cursor groupCursor = mContentResolver.query(RosterProvider.GROUPS_URI, GROUPS_QUERY_COUNTED, selectWhere, null, RosterConstants.GROUP);
 		groupCursor.moveToFirst();
 		while (!groupCursor.isAfterLast()) {
 			Group group = new Group();
-			group.setGroupName(groupCursor.getString(groupCursor
-					.getColumnIndex(RosterConstants.GROUP)));
-			group.setMembers(groupCursor.getString(groupCursor
-					.getColumnIndex("members")));
+			group.setGroupName(groupCursor.getString(groupCursor.getColumnIndex(RosterConstants.GROUP)));
+			group.setMembers(groupCursor.getString(groupCursor.getColumnIndex("members")));
 			mGroupList.add(group);
 			groupCursor.moveToNext();
 		}

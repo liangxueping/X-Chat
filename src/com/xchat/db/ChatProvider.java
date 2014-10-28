@@ -22,11 +22,9 @@ public class ChatProvider extends ContentProvider {
 
 	public static final String AUTHORITY = "com.xchat.provider.Chats";
 	public static final String TABLE_NAME = "chats";
-	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
-			+ "/" + TABLE_NAME);
+	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
 
-	private static final UriMatcher URI_MATCHER = new UriMatcher(
-			UriMatcher.NO_MATCH);
+	private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
 	private static final int MESSAGES = 1;
 	private static final int MESSAGE_ID = 2;

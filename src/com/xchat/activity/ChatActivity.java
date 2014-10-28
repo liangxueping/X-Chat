@@ -3,6 +3,7 @@ package com.xchat.activity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 import android.annotation.SuppressLint;
 import android.content.AsyncQueryHandler;
 import android.content.ComponentName;
@@ -46,6 +47,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+
 import com.xchat.adapter.ChatAdapter;
 import com.xchat.adapter.FaceAdapter;
 import com.xchat.adapter.FacePageAdeapter;
@@ -68,8 +70,7 @@ import com.xchat.xlistview.MsgListView.IXListViewListener;
 
 public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 		OnClickListener, IXListViewListener, IConnectionStatusCallback {
-	public static final String INTENT_EXTRA_USERNAME = ChatActivity.class
-			.getName() + ".username";// 昵称对应的key
+	public static final String INTENT_EXTRA_USERNAME = ChatActivity.class.getName() + ".username";// 昵称对应的key
 	private MsgListView mMsgListView;// 对话ListView
 	private ViewPager mFaceViewPager;// 表情选择ViewPager
 	private int mCurrentPage = 0;// 当前表情页
@@ -101,10 +102,8 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 			mXxService.registerConnectionStatusCallback(ChatActivity.this);
 			// 如果没有连接上，则重新连接xmpp服务器
 			if (!mXxService.isAuthenticated()) {
-				String usr = PreferenceUtils.getPrefString(ChatActivity.this,
-						PreferenceConstants.ACCOUNT, "");
-				String password = PreferenceUtils.getPrefString(
-						ChatActivity.this, PreferenceConstants.PASSWORD, "");
+				String usr = PreferenceUtils.getPrefString(ChatActivity.this, PreferenceConstants.ACCOUNT, "");
+				String password = PreferenceUtils.getPrefString(ChatActivity.this, PreferenceConstants.PASSWORD, "");
 				mXxService.Login(usr, password);
 			}
 		}
@@ -146,8 +145,7 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 		initView();// 初始化view
 		initFacePage();// 初始化表情
 		setChatWindowAdapter();// 初始化对话数据
-		getContentResolver().registerContentObserver(
-				RosterProvider.CONTENT_URI, true, mContactObserver);// 开始监听联系人数据库
+		getContentResolver().registerContentObserver(RosterProvider.CONTENT_URI, true, mContactObserver);// 开始监听联系人数据库
 	}
 
 	@Override
@@ -252,14 +250,12 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 					Cursor cursor) {
 				// ListAdapter adapter = new ChatWindowAdapter(cursor,
 				// PROJECTION_FROM, PROJECTION_TO, mWithJabberID);
-				ListAdapter adapter = new ChatAdapter(ChatActivity.this,
-						cursor, PROJECTION_FROM);
+				ListAdapter adapter = new ChatAdapter(ChatActivity.this, cursor, PROJECTION_FROM);
 				mMsgListView.setAdapter(adapter);
 				mMsgListView.setSelection(adapter.getCount() - 1);
 			}
 
-		}.startQuery(0, null, ChatProvider.CONTENT_URI, PROJECTION_FROM,
-				selection, null, null);
+		}.startQuery(0, null, ChatProvider.CONTENT_URI, PROJECTION_FROM, selection, null, null);
 		// 同步查询数据库，建议停止使用,如果数据庞大时，导致界面失去响应
 		// Cursor cursor = managedQuery(ChatProvider.CONTENT_URI,
 		// PROJECTION_FROM,
@@ -377,8 +373,7 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 	private void sendMessageIfNotNull() {
 		if (mChatEditText.getText().length() >= 1) {
 			if (mXxService != null) {
-				mXxService.sendMessage(mWithJabberID, mChatEditText.getText()
-						.toString());
+				mXxService.sendMessage(mWithJabberID, mChatEditText.getText().toString());
 				if (!mXxService.isAuthenticated())
 					T.showShort(this, "消息已经保存随后发送");
 			}
@@ -391,17 +386,14 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 	public boolean onTouch(View v, MotionEvent event) {
 		switch (v.getId()) {
 		case R.id.msg_listView:
-			mInputMethodManager.hideSoftInputFromWindow(
-					mChatEditText.getWindowToken(), 0);
-			mFaceSwitchBtn
-					.setImageResource(R.drawable.qzone_edit_face_drawable);
+			mInputMethodManager.hideSoftInputFromWindow(mChatEditText.getWindowToken(), 0);
+			mFaceSwitchBtn.setImageResource(R.drawable.qzone_edit_face_drawable);
 			mFaceRoot.setVisibility(View.GONE);
 			mIsFaceShow = false;
 			break;
 		case R.id.input:
 			mInputMethodManager.showSoftInput(mChatEditText, 0);
-			mFaceSwitchBtn
-					.setImageResource(R.drawable.qzone_edit_face_drawable);
+			mFaceSwitchBtn.setImageResource(R.drawable.qzone_edit_face_drawable);
 			mFaceRoot.setVisibility(View.GONE);
 			mIsFaceShow = false;
 			break;
@@ -453,8 +445,7 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 		gv.setCacheColorHint(Color.TRANSPARENT);
 		gv.setHorizontalSpacing(1);
 		gv.setVerticalSpacing(1);
-		gv.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-				LayoutParams.MATCH_PARENT));
+		gv.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		gv.setGravity(Gravity.CENTER);
 		gv.setAdapter(new FaceAdapter(this, i));
 		gv.setOnTouchListener(forbidenScroll());

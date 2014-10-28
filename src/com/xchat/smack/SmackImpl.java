@@ -1,7 +1,10 @@
 package com.xchat.smack;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
@@ -12,6 +15,7 @@ import org.jivesoftware.smack.RosterListener;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.OrFilter;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
@@ -24,6 +28,11 @@ import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.carbons.Carbon;
 import org.jivesoftware.smackx.carbons.CarbonManager;
+import org.jivesoftware.smackx.filetransfer.FileTransferListener;
+import org.jivesoftware.smackx.filetransfer.FileTransferManager;
+import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
+import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
+import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import org.jivesoftware.smackx.forward.Forwarded;
 import org.jivesoftware.smackx.packet.DelayInfo;
 import org.jivesoftware.smackx.packet.DelayInformation;
@@ -35,6 +44,7 @@ import org.jivesoftware.smackx.provider.DiscoverInfoProvider;
 import org.jivesoftware.smackx.receipts.DeliveryReceipt;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
+
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -47,7 +57,9 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
+
 import com.xchat.activity.R;
+import com.xchat.app.XChatApp;
 import com.xchat.db.ChatProvider;
 import com.xchat.db.ChatProvider.ChatConstants;
 import com.xchat.db.RosterProvider;
@@ -114,6 +126,7 @@ public class SmackImpl implements Smack {
 	private PacketListener mPacketListener;
 	private PacketListener mSendFailureListener;
 	private PacketListener mPongListener;
+	private FileTransferManager fileTransferManager;
 
 	// ping-pong服务器
 	private String mPingID;
@@ -148,6 +161,7 @@ public class SmackImpl implements Smack {
 			this.mXMPPConfig.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
 
 		this.mXMPPConnection = new XMPPConnection(mXMPPConfig);
+		fileTransferManager = new FileTransferManager(mXMPPConnection);
 		this.mService = service;
 		mContentResolver = service.getContentResolver();
 	}
@@ -190,8 +204,7 @@ public class SmackImpl implements Smack {
 			initServiceDiscovery();// 与服务器交互消息监听,发送消息需要回执，判断是否发送成功
 			// SMACK auto-logins if we were authenticated before
 			if (!mXMPPConnection.isAuthenticated()) {
-				String ressource = PreferenceUtils.getPrefString(mService,
-						PreferenceConstants.RESSOURCE, "XX");
+				String ressource = PreferenceUtils.getPrefString(mService, PreferenceConstants.RESSOURCE, "X-Chat");
 				mXMPPConnection.login(account, password, ressource);
 			}
 			setStatusFromConfig();// 更新在线状态
@@ -208,10 +221,44 @@ public class SmackImpl implements Smack {
 		return mXMPPConnection.isAuthenticated();
 	}
 
+	/** 
+	 * 发送文件 
+	 *  
+	 * @param user 
+	 * @param filePath 
+	 * @throws IOException 
+	 */
+	public void sendFile(String user, String filePath){  
+		if (mXMPPConnection == null)  
+			return;  
+		try {
+			// 发送文件
+			File dbFile = XChatApp.getInstance().getBaseContext().getDatabasePath(ChatProvider.TABLE_NAME);
+			// 创建输出的文件传输  
+			OutgoingFileTransfer transfer = fileTransferManager.createOutgoingFileTransfer(user);  
+			transfer.sendFile(dbFile, "You won't believe this!");
+		} catch (Exception e) {  
+			e.printStackTrace();  
+		}  
+	}
+	//接收文件
+	class RecFileTransferListener implements FileTransferListener {
+		public void fileTransferRequest(FileTransferRequest request) {
+			IncomingFileTransfer accept = request.accept();
+			File file = new File("d:/" + request.getFileName());
+			try {
+				accept.recieveFile(file);
+				System.out.println("接收文件=====");
+			} catch (XMPPException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	private void registerAllListener() {
 		// actually, authenticated must be true now, or an exception must have
 		// been thrown.
 		if (isAuthenticated()) {
+			registerFileListener();
 			registerMessageListener();
 			registerMessageSendFailureListener();
 			registerPongListener();
@@ -226,6 +273,10 @@ public class SmackImpl implements Smack {
 		}
 	}
 
+	/************ start 新文件处理 ********************/
+	private void registerFileListener() {
+		fileTransferManager.addFileTransferListener(new RecFileTransferListener());
+	}
 	/************ start 新消息处理 ********************/
 	private void registerMessageListener() {
 		// do not register multiple packet listeners
@@ -233,7 +284,8 @@ public class SmackImpl implements Smack {
 			mXMPPConnection.removePacketListener(mPacketListener);
 
 		PacketTypeFilter filter = new PacketTypeFilter(Message.class);
-
+		OrFilter orFilter = new OrFilter();
+		orFilter.addFilter(filter);
 		mPacketListener = new PacketListener() {
 			public void processPacket(Packet packet) {
 				try {
@@ -243,27 +295,20 @@ public class SmackImpl implements Smack {
 
 						// try to extract a carbon
 						Carbon cc = CarbonManager.getCarbon(msg);
-						if (cc != null
-								&& cc.getDirection() == Carbon.Direction.received) {
+						if (cc != null && cc.getDirection() == Carbon.Direction.received) {
 							L.d("carbon: " + cc.toXML());
-							msg = (Message) cc.getForwarded()
-									.getForwardedPacket();
+							msg = (Message) cc.getForwarded().getForwardedPacket();
 							chatMessage = msg.getBody();
 							// fall through
-						} else if (cc != null
-								&& cc.getDirection() == Carbon.Direction.sent) {
+						} else if (cc != null && cc.getDirection() == Carbon.Direction.sent) {
 							L.d("carbon: " + cc.toXML());
-							msg = (Message) cc.getForwarded()
-									.getForwardedPacket();
+							msg = (Message) cc.getForwarded().getForwardedPacket();
 							chatMessage = msg.getBody();
 							if (chatMessage == null)
 								return;
 							String fromJID = getJabberID(msg.getTo());
 
-							addChatMessageToDB(ChatConstants.OUTGOING, fromJID,
-									chatMessage, ChatConstants.DS_SENT_OR_READ,
-									System.currentTimeMillis(),
-									msg.getPacketID());
+							addChatMessageToDB(ChatConstants.OUTGOING, fromJID, chatMessage, ChatConstants.DS_SENT_OR_READ, System.currentTimeMillis(), msg.getPacketID());
 							// always return after adding
 							return;
 						}
@@ -277,11 +322,9 @@ public class SmackImpl implements Smack {
 						}
 
 						long ts;
-						DelayInfo timestamp = (DelayInfo) msg.getExtension(
-								"delay", "urn:xmpp:delay");
+						DelayInfo timestamp = (DelayInfo) msg.getExtension("delay", "urn:xmpp:delay");
 						if (timestamp == null)
-							timestamp = (DelayInfo) msg.getExtension("x",
-									"jabber:x:delay");
+							timestamp = (DelayInfo) msg.getExtension("x", "jabber:x:delay");
 						if (timestamp != null)
 							ts = timestamp.getStamp().getTime();
 						else
@@ -289,9 +332,7 @@ public class SmackImpl implements Smack {
 
 						String fromJID = getJabberID(msg.getFrom());
 
-						addChatMessageToDB(ChatConstants.INCOMING, fromJID,
-								chatMessage, ChatConstants.DS_NEW, ts,
-								msg.getPacketID());
+						addChatMessageToDB(ChatConstants.INCOMING, fromJID, chatMessage, ChatConstants.DS_NEW, ts, msg.getPacketID());
 						mService.newMessage(fromJID, chatMessage);
 					}
 				} catch (Exception e) {
@@ -303,9 +344,8 @@ public class SmackImpl implements Smack {
 			}
 		};
 
-		mXMPPConnection.addPacketListener(mPacketListener, filter);
+		mXMPPConnection.addPacketListener(mPacketListener, orFilter);
 	}
-
 	private void addChatMessageToDB(int direction, String JID, String message,
 			int delivery_status, long ts, String packetID) {
 		ContentValues values = new ContentValues();
@@ -326,8 +366,7 @@ public class SmackImpl implements Smack {
 	private void registerMessageSendFailureListener() {
 		// do not register multiple packet listeners
 		if (mSendFailureListener != null)
-			mXMPPConnection
-					.removePacketSendFailureListener(mSendFailureListener);
+			mXMPPConnection.removePacketSendFailureListener(mSendFailureListener);
 
 		PacketTypeFilter filter = new PacketTypeFilter(Message.class);
 
@@ -400,22 +439,14 @@ public class SmackImpl implements Smack {
 
 		};
 
-		mXMPPConnection.addPacketListener(mPongListener, new PacketTypeFilter(
-				IQ.class));
-		mPingAlarmPendIntent = PendingIntent.getBroadcast(
-				mService.getApplicationContext(), 0, mPingAlarmIntent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		mPongTimeoutAlarmPendIntent = PendingIntent.getBroadcast(
-				mService.getApplicationContext(), 0, mPongTimeoutAlarmIntent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		mService.registerReceiver(mPingAlarmReceiver, new IntentFilter(
-				PING_ALARM));
-		mService.registerReceiver(mPongTimeoutAlarmReceiver, new IntentFilter(
-				PONG_TIMEOUT_ALARM));
+		mXMPPConnection.addPacketListener(mPongListener, new PacketTypeFilter(IQ.class));
+		mPingAlarmPendIntent = PendingIntent.getBroadcast(mService.getApplicationContext(), 0, mPingAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		mPongTimeoutAlarmPendIntent = PendingIntent.getBroadcast(mService.getApplicationContext(), 0, mPongTimeoutAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		mService.registerReceiver(mPingAlarmReceiver, new IntentFilter(PING_ALARM));
+		mService.registerReceiver(mPongTimeoutAlarmReceiver, new IntentFilter(PONG_TIMEOUT_ALARM));
 		((AlarmManager) mService.getSystemService(Context.ALARM_SERVICE))
 				.setInexactRepeating(AlarmManager.RTC_WAKEUP,
-						System.currentTimeMillis()
-								+ AlarmManager.INTERVAL_FIFTEEN_MINUTES,
+						System.currentTimeMillis() + AlarmManager.INTERVAL_FIFTEEN_MINUTES,
 						AlarmManager.INTERVAL_FIFTEEN_MINUTES,
 						mPingAlarmPendIntent);
 	}
@@ -488,8 +519,7 @@ public class SmackImpl implements Smack {
 		}
 	}
 
-	public static void sendOfflineMessage(ContentResolver cr, String toJID,
-			String message) {
+	public static void sendOfflineMessage(ContentResolver cr, String toJID, String message) {
 		ContentValues values = new ContentValues();
 		values.put(ChatConstants.DIRECTION, ChatConstants.OUTGOING);
 		values.put(ChatConstants.JID, toJID);
@@ -683,8 +713,7 @@ public class SmackImpl implements Smack {
 	@Override
 	public boolean isAuthenticated() {
 		if (mXMPPConnection != null) {
-			return (mXMPPConnection.isConnected() && mXMPPConnection
-					.isAuthenticated());
+			return (mXMPPConnection.isConnected() && mXMPPConnection.isAuthenticated());
 		}
 		return false;
 	}
@@ -831,16 +860,13 @@ public class SmackImpl implements Smack {
 		newMessage.setBody(message);
 		newMessage.addExtension(new DeliveryReceiptRequest());
 		if (isAuthenticated()) {
-			addChatMessageToDB(ChatConstants.OUTGOING, toJID, message,
-					ChatConstants.DS_SENT_OR_READ, System.currentTimeMillis(),
-					newMessage.getPacketID());
+			addChatMessageToDB(ChatConstants.OUTGOING, toJID, message, ChatConstants.DS_SENT_OR_READ, System.currentTimeMillis(), newMessage.getPacketID());
 			mXMPPConnection.sendPacket(newMessage);
 		} else {
 			// send offline -> store to DB
-			addChatMessageToDB(ChatConstants.OUTGOING, toJID, message,
-					ChatConstants.DS_NEW, System.currentTimeMillis(),
-					newMessage.getPacketID());
+			addChatMessageToDB(ChatConstants.OUTGOING, toJID, message, ChatConstants.DS_NEW, System.currentTimeMillis(), newMessage.getPacketID());
 		}
+		//sendFile(toJID, "");
 	}
 
 	@Override

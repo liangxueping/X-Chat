@@ -46,8 +46,7 @@ public class RecentChatFragment extends Fragment implements OnClickListener {
 		try {
 			mFragmentCallBack = (FragmentCallBack) activity;
 		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnHeadlineSelectedListener");
+			throw new ClassCastException(activity.toString() + " must implement OnHeadlineSelectedListener");
 		}
 	}
 
@@ -62,8 +61,7 @@ public class RecentChatFragment extends Fragment implements OnClickListener {
 	public void onResume() {
 		super.onResume();
 		mRecentChatAdapter.requery();
-		mContentResolver.registerContentObserver(ChatProvider.CONTENT_URI,
-				true, mChatObserver);
+		mContentResolver.registerContentObserver(ChatProvider.CONTENT_URI, true, mChatObserver);
 	}
 
 	@Override
@@ -75,8 +73,7 @@ public class RecentChatFragment extends Fragment implements OnClickListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater
-				.inflate(R.layout.recent_chat_fragment, container, false);
+		return inflater.inflate(R.layout.recent_chat_fragment, container, false);
 	}
 
 	@Override
@@ -88,13 +85,11 @@ public class RecentChatFragment extends Fragment implements OnClickListener {
 	private void initView(View view) {
 		mTitleView = (TextView) view.findViewById(R.id.ivTitleName);
 		mTitleView.setText(R.string.recent_chat_fragment_title);
-		mTitleAddView = (ImageView) view
-				.findViewById(R.id.ivTitleBtnRightImage);
+		mTitleAddView = (ImageView) view.findViewById(R.id.ivTitleBtnRightImage);
 		mTitleAddView.setImageResource(R.drawable.setting_add_account_white);
 		mTitleAddView.setVisibility(View.VISIBLE);
 		mTitleAddView.setOnClickListener(this);
-		mSwipeListView = (SwipeListView) view
-				.findViewById(R.id.recent_listview);
+		mSwipeListView = (SwipeListView) view.findViewById(R.id.recent_listview);
 		mSwipeListView.setEmptyView(view.findViewById(R.id.recent_empty));
 		mSwipeListView.setAdapter(mRecentChatAdapter);
 		mSwipeListView.setSwipeListViewListener(mSwipeListViewListener);
@@ -121,13 +116,11 @@ public class RecentChatFragment extends Fragment implements OnClickListener {
 		public void onClickFrontView(int position) {
 			Cursor clickCursor = mRecentChatAdapter.getCursor();
 			clickCursor.moveToPosition(position);
-			String jid = clickCursor.getString(clickCursor
-					.getColumnIndex(ChatConstants.JID));
+			String jid = clickCursor.getString(clickCursor.getColumnIndex(ChatConstants.JID));
 			Uri userNameUri = Uri.parse(jid);
 			Intent toChatIntent = new Intent(getActivity(), ChatActivity.class);
 			toChatIntent.setData(userNameUri);
-			toChatIntent.putExtra(ChatActivity.INTENT_EXTRA_USERNAME,
-					XMPPHelper.splitJidAndServer(jid));
+			toChatIntent.putExtra(ChatActivity.INTENT_EXTRA_USERNAME, XMPPHelper.splitJidAndServer(jid));
 			startActivity(toChatIntent);
 		}
 

@@ -134,8 +134,7 @@ public class XChatService extends BaseService implements EventHandler,
 		BaseActivity.mListeners.add(this);
 		mActivityManager = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
 		mPackageName = getPackageName();
-		mPAlarmIntent = PendingIntent.getBroadcast(this, 0, mAlarmIntent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+		mPAlarmIntent = PendingIntent.getBroadcast(this, 0, mAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		registerReceiver(mAlarmReceiver, new IntentFilter(RECONNECT_ALARM));
 	}
 
@@ -162,8 +161,7 @@ public class XChatService extends BaseService implements EventHandler,
 		super.onDestroy();
 		XChatBroadcastReceiver.mListeners.remove(this);
 		BaseActivity.mListeners.remove(this);
-		((AlarmManager) getSystemService(Context.ALARM_SERVICE))
-				.cancel(mPAlarmIntent);// 取消重连闹钟
+		((AlarmManager) getSystemService(Context.ALARM_SERVICE)).cancel(mPAlarmIntent);// 取消重连闹钟
 		unregisterReceiver(mAlarmReceiver);// 注销广播监听
 		logout();
 	}
@@ -242,7 +240,13 @@ public class XChatService extends BaseService implements EventHandler,
 		else
 			SmackImpl.sendOfflineMessage(getContentResolver(), user, message);
 	}
-
+	// 发送文件
+	public void sendFile(String user, String filePaht) {
+		if (mSmackable != null){
+			mSmackable.sendFile(user, filePaht);
+		}
+	}
+	
 	// 是否连接上服务器
 	public boolean isAuthenticated() {
 		if (mSmackable != null) {
@@ -418,12 +422,10 @@ public class XChatService extends BaseService implements EventHandler,
 	public void newMessage(final String from, final String message) {
 		mMainHandler.post(new Runnable() {
 			public void run() {
-				if (!PreferenceUtils.getPrefBoolean(XChatService.this,
-						PreferenceConstants.SCLIENTNOTIFY, false))
+				if (!PreferenceUtils.getPrefBoolean(XChatService.this, PreferenceConstants.SCLIENTNOTIFY, false))
 					MediaPlayer.create(XChatService.this, R.raw.office).start();
 				if (!isAppOnForeground())
-					notifyClient(from, mSmackable.getNameForJID(from), message,
-							!mIsBoundTo.contains(from));
+					notifyClient(from, mSmackable.getNameForJID(from), message, !mIsBoundTo.contains(from));
 				// T.showLong(XXService.this, from + ": " + message);
 
 			}

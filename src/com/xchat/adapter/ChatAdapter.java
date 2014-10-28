@@ -41,37 +41,27 @@ public class ChatAdapter extends SimpleCursorAdapter {
 		Cursor cursor = this.getCursor();
 		cursor.moveToPosition(position);
 
-		long dateMilliseconds = cursor.getLong(cursor
-				.getColumnIndex(ChatProvider.ChatConstants.DATE));
+		long dateMilliseconds = cursor.getLong(cursor.getColumnIndex(ChatProvider.ChatConstants.DATE));
 
-		int _id = cursor.getInt(cursor
-				.getColumnIndex(ChatProvider.ChatConstants._ID));
+		int _id = cursor.getInt(cursor.getColumnIndex(ChatProvider.ChatConstants._ID));
 		String date = TimeUtil.getChatTime(dateMilliseconds);
-		String message = cursor.getString(cursor
-				.getColumnIndex(ChatProvider.ChatConstants.MESSAGE));
-		int come = cursor.getInt(cursor
-				.getColumnIndex(ChatProvider.ChatConstants.DIRECTION));// 消息来自
+		String message = cursor.getString(cursor.getColumnIndex(ChatProvider.ChatConstants.MESSAGE));
+		int come = cursor.getInt(cursor.getColumnIndex(ChatProvider.ChatConstants.DIRECTION));// 消息来自
 		boolean from_me = (come == ChatConstants.OUTGOING);
-		String jid = cursor.getString(cursor
-				.getColumnIndex(ChatProvider.ChatConstants.JID));
-		int delivery_status = cursor.getInt(cursor
-				.getColumnIndex(ChatProvider.ChatConstants.DELIVERY_STATUS));
+		String jid = cursor.getString(cursor.getColumnIndex(ChatProvider.ChatConstants.JID));
+		int delivery_status = cursor.getInt(cursor.getColumnIndex(ChatProvider.ChatConstants.DELIVERY_STATUS));
 		ViewHolder viewHolder;
-		if (convertView == null
-				|| convertView.getTag(R.drawable.ic_launcher + come) == null) {
+		if (convertView == null || convertView.getTag(R.drawable.ic_launcher + come) == null) {
 			if (come == ChatConstants.OUTGOING) {
-				convertView = mInflater.inflate(R.layout.chat_item_right,
-						parent, false);
+				convertView = mInflater.inflate(R.layout.chat_item_right, parent, false);
 			} else {
 				convertView = mInflater.inflate(R.layout.chat_item_left, null);
 			}
 			viewHolder = buildHolder(convertView);
 			convertView.setTag(R.drawable.ic_launcher + come, viewHolder);
-			convertView
-					.setTag(R.string.app_name, R.drawable.ic_launcher + come);
+			convertView.setTag(R.string.app_name, R.drawable.ic_launcher + come);
 		} else {
-			viewHolder = (ViewHolder) convertView.getTag(R.drawable.ic_launcher
-					+ come);
+			viewHolder = (ViewHolder) convertView.getTag(R.drawable.ic_launcher + come);
 		}
 
 		if (!from_me && delivery_status == ChatConstants.DS_NEW) {
@@ -97,24 +87,19 @@ public class ChatAdapter extends SimpleCursorAdapter {
 	 * @param id
 	 */
 	private void markAsRead(int id) {
-		Uri rowuri = Uri.parse("content://" + ChatProvider.AUTHORITY + "/"
-				+ ChatProvider.TABLE_NAME + "/" + id);
+		Uri rowuri = Uri.parse("content://" + ChatProvider.AUTHORITY + "/" + ChatProvider.TABLE_NAME + "/" + id);
 		L.d("markAsRead: " + rowuri);
 		ContentValues values = new ContentValues();
 		values.put(ChatConstants.DELIVERY_STATUS, ChatConstants.DS_SENT_OR_READ);
 		mContext.getContentResolver().update(rowuri, values, null, null);
 	}
 
-	private void bindViewData(ViewHolder holder, String date, boolean from_me,
-			String from, String message, int delivery_status) {
+	private void bindViewData(ViewHolder holder, String date, boolean from_me, String from, String message, int delivery_status) {
 		holder.avatar.setBackgroundResource(R.drawable.login_default_avatar);
-		if (from_me
-				&& !PreferenceUtils.getPrefBoolean(mContext,
-						PreferenceConstants.SHOW_MY_HEAD, true)) {
+		if (from_me && !PreferenceUtils.getPrefBoolean(mContext, PreferenceConstants.SHOW_MY_HEAD, true)) {
 			holder.avatar.setVisibility(View.GONE);
 		}
-		holder.content.setText(XMPPHelper.convertNormalStringToSpannableString(
-				mContext, message, false));
+		holder.content.setText(XMPPHelper.convertNormalStringToSpannableString(mContext, message, false));
 		holder.time.setText(date);
 
 	}

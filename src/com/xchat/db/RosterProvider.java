@@ -25,14 +25,11 @@ public class RosterProvider extends ContentProvider {
 	public static final String AUTHORITY = "com.xchat.provider.Roster";
 	public static final String TABLE_ROSTER = "roster";
 	public static final String TABLE_GROUPS = "groups";
-	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
-			+ "/" + TABLE_ROSTER);
-	public static final Uri GROUPS_URI = Uri.parse("content://" + AUTHORITY
-			+ "/" + TABLE_GROUPS);
+	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + TABLE_ROSTER);
+	public static final Uri GROUPS_URI = Uri.parse("content://" + AUTHORITY + "/" + TABLE_GROUPS);
 	public static final String QUERY_ALIAS = "main_result";
 
-	private static final UriMatcher URI_MATCHER = new UriMatcher(
-			UriMatcher.NO_MATCH);
+	private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 	private static final int CONTACTS = 1;
 	private static final int CONTACT_ID = 2;
 	private static final int GROUPS = 3;

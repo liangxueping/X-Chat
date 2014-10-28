@@ -31,10 +31,8 @@ public class XChatBroadcastReceiver extends BroadcastReceiver {
 			Intent xmppServiceIntent = new Intent(context, XChatService.class);
 			context.stopService(xmppServiceIntent);
 		} else {
-			if (!TextUtils.isEmpty(PreferenceUtils.getPrefString(context,
-					PreferenceConstants.PASSWORD, ""))
-					&& PreferenceUtils.getPrefBoolean(context,
-							PreferenceConstants.AUTO_START, true)) {
+			if (!TextUtils.isEmpty(PreferenceUtils.getPrefString(context,PreferenceConstants.PASSWORD, "")) 
+					&& PreferenceUtils.getPrefBoolean(context, PreferenceConstants.AUTO_START, true)) {
 				Intent i = new Intent(context, XChatService.class);
 				i.setAction(BOOT_COMPLETED_ACTION);
 				context.startService(i);
