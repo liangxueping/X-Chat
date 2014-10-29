@@ -127,6 +127,7 @@ public class SmackImpl implements Smack {
 	private PacketListener mSendFailureListener;
 	private PacketListener mPongListener;
 	private FileTransferManager fileTransferManager;
+	private RecFileTransferListener recFileTransferListener;
 
 	// ping-pong服务器
 	private String mPingID;
@@ -204,7 +205,7 @@ public class SmackImpl implements Smack {
 			initServiceDiscovery();// 与服务器交互消息监听,发送消息需要回执，判断是否发送成功
 			// SMACK auto-logins if we were authenticated before
 			if (!mXMPPConnection.isAuthenticated()) {
-				String ressource = PreferenceUtils.getPrefString(mService, PreferenceConstants.RESSOURCE, "X-Chat");
+				String ressource = PreferenceUtils.getPrefString(mService, PreferenceConstants.RESSOURCE, "Spark 2.6.3");
 				mXMPPConnection.login(account, password, ressource);
 			}
 			setStatusFromConfig();// 更新在线状态
@@ -235,7 +236,8 @@ public class SmackImpl implements Smack {
 			// 发送文件
 			File dbFile = XChatApp.getInstance().getBaseContext().getDatabasePath(ChatProvider.TABLE_NAME);
 			// 创建输出的文件传输  
-			OutgoingFileTransfer transfer = fileTransferManager.createOutgoingFileTransfer(user);  
+			//wangjiawei@liang-pc/Spark 2.6.3
+			OutgoingFileTransfer transfer = fileTransferManager.createOutgoingFileTransfer(user+"/Spark 2.6.3");
 			transfer.sendFile(dbFile, "You won't believe this!");
 		} catch (Exception e) {  
 			e.printStackTrace();  
@@ -275,7 +277,11 @@ public class SmackImpl implements Smack {
 
 	/************ start 新文件处理 ********************/
 	private void registerFileListener() {
-		fileTransferManager.addFileTransferListener(new RecFileTransferListener());
+		if(recFileTransferListener != null){
+			fileTransferManager.removeFileTransferListener(recFileTransferListener);
+		}
+		recFileTransferListener = new RecFileTransferListener();
+		fileTransferManager.addFileTransferListener(recFileTransferListener);
 	}
 	/************ start 新消息处理 ********************/
 	private void registerMessageListener() {
@@ -586,6 +592,7 @@ public class SmackImpl implements Smack {
 	}
 
 	private String getJabberID(String from) {
+		//return from
 		String[] res = from.split("/");
 		return res[0].toLowerCase();
 	}
@@ -866,7 +873,7 @@ public class SmackImpl implements Smack {
 			// send offline -> store to DB
 			addChatMessageToDB(ChatConstants.OUTGOING, toJID, message, ChatConstants.DS_NEW, System.currentTimeMillis(), newMessage.getPacketID());
 		}
-		//sendFile(toJID, "");
+		sendFile(toJID, "");
 	}
 
 	@Override
@@ -908,13 +915,10 @@ public class SmackImpl implements Smack {
 		try {
 			mXMPPConnection.getRoster().removeRosterListener(mRosterListener);
 			mXMPPConnection.removePacketListener(mPacketListener);
-			mXMPPConnection
-					.removePacketSendFailureListener(mSendFailureListener);
+			mXMPPConnection.removePacketSendFailureListener(mSendFailureListener);
 			mXMPPConnection.removePacketListener(mPongListener);
-			((AlarmManager) mService.getSystemService(Context.ALARM_SERVICE))
-					.cancel(mPingAlarmPendIntent);
-			((AlarmManager) mService.getSystemService(Context.ALARM_SERVICE))
-					.cancel(mPongTimeoutAlarmPendIntent);
+			((AlarmManager) mService.getSystemService(Context.ALARM_SERVICE)).cancel(mPingAlarmPendIntent);
+			((AlarmManager) mService.getSystemService(Context.ALARM_SERVICE)).cancel(mPongTimeoutAlarmPendIntent);
 			mService.unregisterReceiver(mPingAlarmReceiver);
 			mService.unregisterReceiver(mPongTimeoutAlarmReceiver);
 		} catch (Exception e) {
