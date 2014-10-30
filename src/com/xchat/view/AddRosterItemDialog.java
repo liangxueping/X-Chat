@@ -18,8 +18,7 @@ import com.xchat.exception.XChatAdressMalformedException;
 import com.xchat.service.XChatService;
 import com.xchat.util.XMPPHelper;
 
-public class AddRosterItemDialog extends AlertDialog implements
-		DialogInterface.OnClickListener, TextWatcher {
+public class AddRosterItemDialog extends AlertDialog implements DialogInterface.OnClickListener, TextWatcher {
 
 	private MainActivity mMainActivity;
 	private XChatService mXxService;
@@ -29,16 +28,14 @@ public class AddRosterItemDialog extends AlertDialog implements
 	private EditText aliasInputField;
 	private GroupNameView mGroupNameView;
 
-	public AddRosterItemDialog(MainActivity mainActivity,
-			XChatService service) {
+	public AddRosterItemDialog(MainActivity mainActivity, XChatService service) {
 		super(mainActivity);
 		mMainActivity = mainActivity;
 		mXxService = service;
 
 		setTitle(R.string.addFriend_Title);
 
-		LayoutInflater inflater = (LayoutInflater) mainActivity
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View group = inflater.inflate(R.layout.addrosteritemdialog, null, false);
 		setView(group);
 
@@ -49,8 +46,7 @@ public class AddRosterItemDialog extends AlertDialog implements
 		mGroupNameView.setGroupList(mMainActivity.getRosterGroups());
 
 		setButton(BUTTON_POSITIVE, mainActivity.getString(android.R.string.ok), this);
-		setButton(BUTTON_NEGATIVE, mainActivity.getString(android.R.string.cancel),
-				(DialogInterface.OnClickListener)null);
+		setButton(BUTTON_NEGATIVE, mainActivity.getString(android.R.string.cancel), (DialogInterface.OnClickListener)null);
 
 	}
 	public AddRosterItemDialog(MainActivity mainActivity,
@@ -69,9 +65,7 @@ public class AddRosterItemDialog extends AlertDialog implements
 	}
 
 	public void onClick(DialogInterface dialog, int which) {
-		mXxService.addRosterItem(userInputField.getText()
-				.toString(), aliasInputField.getText().toString(),
-				mGroupNameView.getGroupName());
+		mXxService.addRosterItem(userInputField.getText().toString(), aliasInputField.getText().toString(), mGroupNameView.getGroupName());
 	}
 
 	public void afterTextChanged(Editable s) {

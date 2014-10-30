@@ -28,8 +28,10 @@ import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.carbons.Carbon;
 import org.jivesoftware.smackx.carbons.CarbonManager;
+import org.jivesoftware.smackx.filetransfer.FileTransfer.Status;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
+import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
@@ -126,9 +128,8 @@ public class SmackImpl implements Smack {
 	private PacketListener mPacketListener;
 	private PacketListener mSendFailureListener;
 	private PacketListener mPongListener;
-	private FileTransferManager fileTransferManager;
 	private RecFileTransferListener recFileTransferListener;
-
+	private String toUser;
 	// ping-pong服务器
 	private String mPingID;
 	private long mPingTimestamp;
@@ -162,7 +163,6 @@ public class SmackImpl implements Smack {
 			this.mXMPPConfig.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
 
 		this.mXMPPConnection = new XMPPConnection(mXMPPConfig);
-		fileTransferManager = new FileTransferManager(mXMPPConnection);
 		this.mService = service;
 		mContentResolver = service.getContentResolver();
 	}
@@ -230,18 +230,45 @@ public class SmackImpl implements Smack {
 	 * @throws IOException 
 	 */
 	public void sendFile(String user, String filePath){  
-		if (mXMPPConnection == null)  
+		if (mXMPPConnection == null){
 			return;  
-		try {
-			// 发送文件
-			File dbFile = XChatApp.getInstance().getBaseContext().getDatabasePath(ChatProvider.TABLE_NAME);
-			// 创建输出的文件传输  
-			//wangjiawei@liang-pc/Spark 2.6.3
-			OutgoingFileTransfer transfer = fileTransferManager.createOutgoingFileTransfer(user+"/Spark 2.6.3");
-			transfer.sendFile(dbFile, "You won't believe this!");
-		} catch (Exception e) {  
-			e.printStackTrace();  
-		}  
+		}
+		toUser = user;
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					FileTransferManager manager = new FileTransferManager(mXMPPConnection);
+//					ServiceDiscoveryManager sdm =  ServiceDiscoveryManager.getInstanceFor(mXMPPConnection);
+//					if (sdm == null){
+//						sdm = new  ServiceDiscoveryManager(mXMPPConnection);
+//				    }
+//				    sdm.addFeature("http://jabber.org/protocol/disco#info");
+//				    sdm.addFeature("jabber:iq:privacy");
+//				      
+//					FileTransferNegotiator.setServiceEnabled(mXMPPConnection, true);
+					
+					// 发送文件
+					File dbFile = XChatApp.getInstance().getBaseContext().getDatabasePath("chat.db");
+					// 创建输出的文件传输  
+					//wangjiawei@liang-pc/Spark 2.6.3
+					OutgoingFileTransfer transfer = manager.createOutgoingFileTransfer(toUser + "/Spark 2.6.3");
+					transfer.sendFile(dbFile, "You won't believe this!");
+					while(!transfer.isDone()) {
+						if(transfer.getStatus().equals(Status.error)) {
+							System.out.println("ERROR!!! " + transfer.getError());
+						}else {
+							System.out.println(transfer.getStatus());
+							System.out.println(transfer.getProgress());
+						}
+						sleep(1000);
+					}
+				} catch (Exception e) {  
+					e.printStackTrace();  
+				}  
+			}
+
+		}.start();
 	}
 	//接收文件
 	class RecFileTransferListener implements FileTransferListener {
@@ -277,11 +304,19 @@ public class SmackImpl implements Smack {
 
 	/************ start 新文件处理 ********************/
 	private void registerFileListener() {
-		if(recFileTransferListener != null){
-			fileTransferManager.removeFileTransferListener(recFileTransferListener);
-		}
-		recFileTransferListener = new RecFileTransferListener();
-		fileTransferManager.addFileTransferListener(recFileTransferListener);
+		FileTransferManager manager = new FileTransferManager(mXMPPConnection);
+		manager.addFileTransferListener(new FileTransferListener() {
+			@Override
+			public void fileTransferRequest(FileTransferRequest request) {
+				// 接受
+                IncomingFileTransfer transfer = request.accept();
+                try {
+					transfer.recieveFile(new File("shakespeare_complete_works.txt"));
+				} catch (XMPPException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	/************ start 新消息处理 ********************/
 	private void registerMessageListener() {
@@ -729,6 +764,7 @@ public class SmackImpl implements Smack {
 	public void addRosterItem(String user, String alias, String group)
 			throws XChatException {
 		// TODO Auto-generated method stub
+		
 		addRosterEntry(user, alias, group);
 	}
 
@@ -736,6 +772,8 @@ public class SmackImpl implements Smack {
 			throws XChatException {
 		mRoster = mXMPPConnection.getRoster();
 		try {
+			user = user + "@" + PreferenceConstants.HOST_SERVER;
+//			user = user + "@liang-pc";
 			mRoster.createEntry(user, alias, new String[] { group });
 		} catch (XMPPException e) {
 			throw new XChatException(e.getLocalizedMessage());

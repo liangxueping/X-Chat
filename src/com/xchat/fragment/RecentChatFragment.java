@@ -138,8 +138,7 @@ public class RecentChatFragment extends Fragment implements OnClickListener {
 			if (xxService == null || !xxService.isAuthenticated()) {
 				return;
 			}
-			new AddRosterItemDialog(mFragmentCallBack.getMainActivity(),
-					xxService).show();// 添加联系人
+			new AddRosterItemDialog(mFragmentCallBack.getMainActivity(), xxService).show();// 添加联系人
 			break;
 
 		default:
