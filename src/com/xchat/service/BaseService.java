@@ -117,8 +117,7 @@ public abstract class BaseService extends Service {
 	}
 
 	@SuppressWarnings("deprecation")
-	private void setNotification(String fromJid, String fromUserId,
-			String message) {
+	private void setNotification(String fromJid, String fromUserId, String message) {
 
 		int mNotificationCounter = 0;
 		if (mNotificationCount.containsKey(fromJid)) {
@@ -154,8 +153,7 @@ public abstract class BaseService extends Service {
 				System.currentTimeMillis());
 		Uri userNameUri = Uri.parse(fromJid);
 		mNotificationIntent.setData(userNameUri);
-		mNotificationIntent.putExtra(ChatActivity.INTENT_EXTRA_USERNAME,
-				fromUserId);
+		mNotificationIntent.putExtra(ChatActivity.INTENT_EXTRA_USERNAME, fromUserId);
 		mNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		// need to set flag FLAG_UPDATE_CURRENT to get extras transferred

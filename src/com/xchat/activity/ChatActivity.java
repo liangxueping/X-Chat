@@ -18,6 +18,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.view.ViewPager;
@@ -344,8 +345,7 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 		switch (v.getId()) {
 		case R.id.face_switch_btn:
 			if (!mIsFaceShow) {
-				mInputMethodManager.hideSoftInputFromWindow(
-						mChatEditText.getWindowToken(), 0);
+				mInputMethodManager.hideSoftInputFromWindow(mChatEditText.getWindowToken(), 0);
 				try {
 					Thread.sleep(80);// 解决此时会黑一下屏幕的问题
 				} catch (InterruptedException e) {
@@ -357,13 +357,13 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 			} else {
 				mFaceRoot.setVisibility(View.GONE);
 				mInputMethodManager.showSoftInput(mChatEditText, 0);
-				mFaceSwitchBtn
-						.setImageResource(R.drawable.qzone_edit_face_drawable);
+				mFaceSwitchBtn.setImageResource(R.drawable.qzone_edit_face_drawable);
 				mIsFaceShow = false;
 			}
 			break;
 		case R.id.send:// 发送消息
 			sendMessageIfNotNull();
+			sendFile();
 			break;
 		default:
 			break;
@@ -380,6 +380,11 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 			mChatEditText.setText(null);
 			mSendMsgBtn.setEnabled(false);
 		}
+	}
+	private void sendFile(){
+		//发送文件
+		String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/test.txt";
+		mXxService.sendFile(mWithJabberID, path);
 	}
 
 	@Override

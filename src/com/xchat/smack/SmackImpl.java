@@ -31,7 +31,6 @@ import org.jivesoftware.smackx.carbons.CarbonManager;
 import org.jivesoftware.smackx.filetransfer.FileTransfer.Status;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
-import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
@@ -58,10 +57,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import com.xchat.activity.R;
-import com.xchat.app.XChatApp;
 import com.xchat.db.ChatProvider;
 import com.xchat.db.ChatProvider.ChatConstants;
 import com.xchat.db.RosterProvider;
@@ -128,8 +127,8 @@ public class SmackImpl implements Smack {
 	private PacketListener mPacketListener;
 	private PacketListener mSendFailureListener;
 	private PacketListener mPongListener;
-	private RecFileTransferListener recFileTransferListener;
 	private String toUser;
+	private String sendFilePath;
 	// ping-pong服务器
 	private String mPingID;
 	private long mPingTimestamp;
@@ -161,7 +160,6 @@ public class SmackImpl implements Smack {
 		this.mXMPPConfig.setDebuggerEnabled(smackdebug);
 		if (requireSsl)
 			this.mXMPPConfig.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
-
 		this.mXMPPConnection = new XMPPConnection(mXMPPConfig);
 		this.mService = service;
 		mContentResolver = service.getContentResolver();
@@ -234,26 +232,18 @@ public class SmackImpl implements Smack {
 			return;  
 		}
 		toUser = user;
+		sendFilePath = filePath;
 		new Thread() {
 			@Override
 			public void run() {
 				try {
 					FileTransferManager manager = new FileTransferManager(mXMPPConnection);
-//					ServiceDiscoveryManager sdm =  ServiceDiscoveryManager.getInstanceFor(mXMPPConnection);
-//					if (sdm == null){
-//						sdm = new  ServiceDiscoveryManager(mXMPPConnection);
-//				    }
-//				    sdm.addFeature("http://jabber.org/protocol/disco#info");
-//				    sdm.addFeature("jabber:iq:privacy");
-//				      
-//					FileTransferNegotiator.setServiceEnabled(mXMPPConnection, true);
-					
 					// 发送文件
-					File dbFile = XChatApp.getInstance().getBaseContext().getDatabasePath("chat.db");
+					File file = new File(sendFilePath);
 					// 创建输出的文件传输  
 					//wangjiawei@liang-pc/Spark 2.6.3
 					OutgoingFileTransfer transfer = manager.createOutgoingFileTransfer(toUser + "/Spark 2.6.3");
-					transfer.sendFile(dbFile, "You won't believe this!");
+					transfer.sendFile(file, "You won't believe this!");
 					while(!transfer.isDone()) {
 						if(transfer.getStatus().equals(Status.error)) {
 							System.out.println("ERROR!!! " + transfer.getError());
@@ -269,19 +259,6 @@ public class SmackImpl implements Smack {
 			}
 
 		}.start();
-	}
-	//接收文件
-	class RecFileTransferListener implements FileTransferListener {
-		public void fileTransferRequest(FileTransferRequest request) {
-			IncomingFileTransfer accept = request.accept();
-			File file = new File("d:/" + request.getFileName());
-			try {
-				accept.recieveFile(file);
-				System.out.println("接收文件=====");
-			} catch (XMPPException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 	private void registerAllListener() {
 		// actually, authenticated must be true now, or an exception must have
@@ -308,12 +285,19 @@ public class SmackImpl implements Smack {
 		manager.addFileTransferListener(new FileTransferListener() {
 			@Override
 			public void fileTransferRequest(FileTransferRequest request) {
-				// 接受
-                IncomingFileTransfer transfer = request.accept();
-                try {
-					transfer.recieveFile(new File("shakespeare_complete_works.txt"));
-				} catch (XMPPException e) {
-					e.printStackTrace();
+				if(Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)){
+	                IncomingFileTransfer accept = request.accept();
+					String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+	    			File file = new File(path + "/" + request.getFileName());
+	    			try {
+	    				accept.recieveFile(file);
+	    				L.i("接收文件 path：" + file.getPath());
+	    			} catch (XMPPException e) {
+	    				e.printStackTrace();
+	    			}
+				}else {
+					request.reject();
+    				L.i("拒绝文件");
 				}
 			}
 		});
@@ -436,8 +420,7 @@ public class SmackImpl implements Smack {
 			}
 		};
 
-		mXMPPConnection.addPacketSendFailureListener(mSendFailureListener,
-				filter);
+		mXMPPConnection.addPacketSendFailureListener(mSendFailureListener, filter);
 	}
 
 	public void changeMessageDeliveryStatus(String packetID, int new_status) {
@@ -911,7 +894,6 @@ public class SmackImpl implements Smack {
 			// send offline -> store to DB
 			addChatMessageToDB(ChatConstants.OUTGOING, toJID, message, ChatConstants.DS_NEW, System.currentTimeMillis(), newMessage.getPacketID());
 		}
-		sendFile(toJID, "");
 	}
 
 	@Override

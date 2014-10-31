@@ -29,6 +29,8 @@ public interface Smack {
 	public void setStatusFromConfig();
 
 	public void sendMessage(String user, String message);
+	
+	public void sendFile(String user, String filePath);
 
 	public void sendServerPing();
 

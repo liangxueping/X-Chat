@@ -3,6 +3,8 @@ package com.xchat.app;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jivesoftware.smack.SmackAndroid;
+
 import android.app.Application;
 
 import com.xchat.activity.R;
@@ -25,11 +27,11 @@ public class XChatApp extends Application {
 	public void onCreate() {
 		super.onCreate();
 		mApplication = this;
-		L.isDebug = PreferenceUtils.getPrefBoolean(this,
-				PreferenceConstants.ISNEEDLOG, true);
-		if (PreferenceUtils.getPrefBoolean(this,
-				PreferenceConstants.REPORT_CRASH, true))
+		L.isDebug = PreferenceUtils.getPrefBoolean(this, PreferenceConstants.ISNEEDLOG, true);
+		if (PreferenceUtils.getPrefBoolean(this, PreferenceConstants.REPORT_CRASH, true)){
 			CrashHandler.getInstance().init(this);
+		}
+		SmackAndroid.init(getApplicationContext());
 		initFaceMap();
 	}
 
