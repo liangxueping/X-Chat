@@ -43,7 +43,7 @@ public class AddRosterItemDialog extends AlertDialog implements DialogInterface.
 		aliasInputField = (EditText)group.findViewById(R.id.AddContactAlias_EditTextField);
 
 		mGroupNameView = (GroupNameView)group.findViewById(R.id.AddRosterItem_GroupName);
-		mGroupNameView.setGroupList(mMainActivity.getRosterGroups());
+		mGroupNameView.setGroupList(mMainActivity.friendsFragment.getRosterGroups());
 
 		setButton(BUTTON_POSITIVE, mainActivity.getString(android.R.string.ok), this);
 		setButton(BUTTON_NEGATIVE, mainActivity.getString(android.R.string.cancel), (DialogInterface.OnClickListener)null);

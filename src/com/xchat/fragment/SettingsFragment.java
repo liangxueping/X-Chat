@@ -2,6 +2,7 @@ package com.xchat.fragment;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +21,6 @@ import com.xchat.activity.AboutActivity;
 import com.xchat.activity.FeedBackActivity;
 import com.xchat.activity.FragmentCallBack;
 import com.xchat.activity.LoginActivity;
-import com.xchat.activity.MainActivity;
 import com.xchat.activity.R;
 import com.xchat.service.XChatService;
 import com.xchat.switcher.Switch;
@@ -55,6 +55,7 @@ public class SettingsFragment extends Fragment implements OnClickListener,
 	private Button mExitCancleBtn;
 	private Button mExitConfirmBtn;
 	private FragmentCallBack mFragmentCallBack;
+	private Context mContext;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -68,10 +69,14 @@ public class SettingsFragment extends Fragment implements OnClickListener,
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.main_settings_fragment, container,
-				false);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.main_settings_fragment, container, false);
+		mContext = view.getContext();
+		return view;
+	}
+	
+	public Context getContext(){
+		return mContext;
 	}
 
 	@Override
@@ -136,7 +141,7 @@ public class SettingsFragment extends Fragment implements OnClickListener,
 
 	public void readData() {
 		mHeadIcon.setImageResource(R.drawable.login_default_avatar);
-		mStatusIcon.setImageResource(MainActivity.mStatusMap
+		mStatusIcon.setImageResource(FriendsFragment.mStatusMap
 				.get(PreferenceUtils.getPrefString(getActivity(),
 						PreferenceConstants.STATUS_MODE,
 						PreferenceConstants.AVAILABLE)));
@@ -276,8 +281,7 @@ public class SettingsFragment extends Fragment implements OnClickListener,
 									service.logout();// 注销
 								}
 								dialog.dismiss();
-								startActivity(new Intent(getActivity(),
-										LoginActivity.class));
+								startActivity(new Intent(getActivity(), LoginActivity.class));
 								getActivity().finish();
 							}
 						})

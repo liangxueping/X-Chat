@@ -54,6 +54,9 @@
     <color name="button_reply_normal">#ffffffff</color>
     <color name="qzone_feeditem_sel">#fff1f1f1</color>
     <color name="qzone_feeditem_nor">#fffafafa</color>
+    <color name="home_tab_bar_divider">#ffCACACA</color> <!-- 线 -->
+    <color name="light_gray">#ffB2B2B2</color> <!-- 浅灰色 -->
+    <color name="darker_gray">#ff5F646C</color> <!-- 深灰色 -->
 
     <drawable name="trans">@color/color_hei_8</drawable>
 

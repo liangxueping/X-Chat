@@ -1352,4 +1352,25 @@
 	<string name="recent_chat_fragment_title">最近会话</string>
 	<string name="content_description">无</string>
 	<string name="app_version">V1.0.0</string>
+	
+	<string name="personal_data">个人资料</string>
+    <string name="personal_data_nickname">昵称</string>
+    <string name="personal_data_name">姓名</string>
+    <string name="personal_data_gender">性别</string>
+    <string name="personal_data_mobile">手机</string>
+    <string name="personal_data_email">邮箱</string>
+    <string name="personal_data_card_number">业主卡号</string>
+    <string name="personal_data_address">家庭住址</string>
+    <string name="personal_data_neighborhood">所属街道办</string>
+    <string name="personal_data_community">所属社区</string>
+    <string name="personal_data_false_nickname">小希</string>
+    <string name="personal_data_false_name">杨希</string>
+    <string name="personal_data_false_gender">女</string>
+    <string name="personal_data_false_mobile">186****1122</string>
+    <string name="personal_data_false_email">sin****0630@sina.com</string>
+    <string name="personal_data_false_card_number">1230861288762</string>
+    <string name="personal_data_false_address">北京市西城区罗庄西里2号1201</string>
+    <string name="personal_data_false_neighborhood">罗庄西里街道办</string>
+    <string name="personal_data_false_community">罗庄西里</string>
+	
 </resources>

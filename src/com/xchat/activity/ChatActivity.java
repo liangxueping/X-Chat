@@ -284,6 +284,17 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 		mChatEditText.setOnTouchListener(this);
 		mTitleNameView = (TextView) findViewById(R.id.ivTitleName);
 		mTitleStatusView = (ImageView) findViewById(R.id.ivTitleStatus);
+		
+		ImageButton mLeftBtn = ((ImageButton) findViewById(R.id.show_left_fragment_btn));
+		mLeftBtn.setVisibility(View.VISIBLE);
+		mLeftBtn.setOnClickListener(this);
+		mLeftBtn.setBackgroundResource(R.drawable.show_arrow_left_selector);
+		
+		ImageButton mRightBtn = ((ImageButton) findViewById(R.id.show_right_fragment_btn));
+		mRightBtn.setVisibility(View.VISIBLE);
+		mRightBtn.setOnClickListener(this);
+		mRightBtn.setBackgroundResource(R.drawable.show_user_selector);
+		
 		mChatEditText.setOnKeyListener(new OnKeyListener() {
 
 			@Override
@@ -363,7 +374,13 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 			break;
 		case R.id.send:// 发送消息
 			sendMessageIfNotNull();
-			sendFile();
+			break;
+		case R.id.show_left_fragment_btn:
+			finish();
+			break;
+		case R.id.show_right_fragment_btn:
+			Intent personIntent = new Intent(ChatActivity.this, PersonInfoActivity.class);
+			startActivity(personIntent);
 			break;
 		default:
 			break;
@@ -373,7 +390,12 @@ public class ChatActivity extends SwipeBackActivity implements OnTouchListener,
 	private void sendMessageIfNotNull() {
 		if (mChatEditText.getText().length() >= 1) {
 			if (mXxService != null) {
-				mXxService.sendMessage(mWithJabberID, mChatEditText.getText().toString());
+				String msg = mChatEditText.getText().toString();
+				if(msg.equals("1")){
+					sendFile();
+				}else {
+					mXxService.sendMessage(mWithJabberID, msg);
+				}
 				if (!mXxService.isAuthenticated())
 					T.showShort(this, "消息已经保存随后发送");
 			}

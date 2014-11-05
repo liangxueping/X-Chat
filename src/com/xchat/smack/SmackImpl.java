@@ -244,6 +244,9 @@ public class SmackImpl implements Smack {
 					//wangjiawei@liang-pc/Spark 2.6.3
 					OutgoingFileTransfer transfer = manager.createOutgoingFileTransfer(toUser + "/Spark 2.6.3");
 					transfer.sendFile(file, "You won't believe this!");
+					addChatMessageToDB(ChatConstants.OUTGOING, toUser, "发送文件："+file.getName(), ChatConstants.DS_SENT_OR_READ, System.currentTimeMillis(), "");
+					mService.newMessage(toUser, "发送文件："+file.getName());
+					
 					while(!transfer.isDone()) {
 						if(transfer.getStatus().equals(Status.error)) {
 							System.out.println("ERROR!!! " + transfer.getError());
@@ -292,6 +295,11 @@ public class SmackImpl implements Smack {
 	    			try {
 	    				accept.recieveFile(file);
 	    				L.i("接收文件 path：" + file.getPath());
+	    				String fromID = request.getRequestor();
+						String user = getJabberID(fromID);
+
+						addChatMessageToDB(ChatConstants.INCOMING, user, "接收文件："+file.getName(), ChatConstants.DS_NEW, System.currentTimeMillis(), "null");
+						mService.newMessage(user, "接收文件："+file.getName());
 	    			} catch (XMPPException e) {
 	    				e.printStackTrace();
 	    			}
