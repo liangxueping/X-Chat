@@ -154,6 +154,8 @@ public class LoginActivity extends FragmentActivity implements
 		mAccountEt.addTextChangedListener(this);
 		mLoginDialog = DialogUtil.getLoginDialog(this);
 		mLoginOutTimeProcess = new ConnectionOutTimeProcess();
+		mAccountEt.setText("liangxueping");
+		mPasswordEt.setText("123");
 	}
 
 	public void onLoginClick(View v) {
