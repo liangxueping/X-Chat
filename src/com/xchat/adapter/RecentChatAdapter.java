@@ -73,19 +73,13 @@ public class RecentChatAdapter extends SimpleCursorAdapter {
 		msgcursor.moveToFirst();
 		int count = msgcursor.getInt(0);
 		ViewHolder viewHolder;
-		if (convertView == null
-				|| convertView.getTag(R.drawable.ic_launcher
-						+ (int) dateMilliseconds) == null) {
-			convertView = mLayoutInflater.inflate(
-					R.layout.recent_listview_item, parent, false);
+		if (convertView == null || convertView.getTag(R.drawable.ic_launcher + (int) dateMilliseconds) == null) {
+			convertView = mLayoutInflater.inflate(R.layout.recent_listview_item, parent, false);
 			viewHolder = buildHolder(convertView, jid);
-			convertView.setTag(R.drawable.ic_launcher + (int) dateMilliseconds,
-					viewHolder);
-			convertView.setTag(R.string.app_name, R.drawable.ic_launcher
-					+ (int) dateMilliseconds);
+			convertView.setTag(R.drawable.ic_launcher + (int) dateMilliseconds, viewHolder);
+			convertView.setTag(R.string.app_name, R.drawable.ic_launcher + (int) dateMilliseconds);
 		} else {
-			viewHolder = (ViewHolder) convertView.getTag(R.drawable.ic_launcher
-					+ (int) dateMilliseconds);
+			viewHolder = (ViewHolder) convertView.getTag(R.drawable.ic_launcher + (int) dateMilliseconds);
 		}
 		viewHolder.jidView.setText(XMPPHelper.splitJidAndServer(jid));
 		viewHolder.msgView.setText(XMPPHelper

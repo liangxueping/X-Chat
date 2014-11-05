@@ -27,7 +27,7 @@
             swipe:swipeFrontView="@+id/front"
             swipe:swipeMode="left"
             swipe:swipeOffsetLeft="200dip"
-            swipe:swipeOpenOnLongPress="false" />
+            swipe:swipeOpenOnLongPress="true" />
 
         <TextView
             android:id="@+id/recent_empty"
