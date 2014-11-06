@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:gravity="left"
-            android:hint="user@example.com"
+            android:hint="@string/xchat_email_address"
             android:inputType="textEmailAddress"
             android:maxWidth="200sp"
             android:singleLine="true"

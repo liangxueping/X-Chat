@@ -1,8 +1,9 @@
 package com.xchat.util;
 
 public class PreferenceConstants {
-	public static final String HOST_SERVER = "192.168.168.101";
-//	public static final String HOST_SERVER = "10.200.16.56";
+//	public static final String HOST_SERVER = "192.168.168.101";
+	public static final String HOST_SERVER = "106.120.91.86";
+	public static final String HOST_DOMAIN = "das237test";
 //	public static final String HOST_SERVER = "liang-pc";
 	
 	public static final String GMAIL_SERVER = "talk.google.com";

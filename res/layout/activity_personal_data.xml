@@ -57,7 +57,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/personal_data_nickname"
+                        android:text="昵称"
                         android:textColor="@color/darker_gray"
                         android:textSize="14sp" />
 
@@ -68,7 +68,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="80dp"
                         android:textColor="@color/light_gray"
-                        android:text="@string/personal_data_false_nickname"
+                        android:text="小三"
                         android:textSize="14sp"/>
                 </RelativeLayout>
 
@@ -78,30 +78,30 @@
                     android:background="@color/home_tab_bar_divider" />
 
                 <RelativeLayout
-                    android:id="@+id/layoutName"
+                    android:id="@+id/layoutSignature"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:padding="10dp"  >
 
                     <TextView
-                        android:id="@+id/tvNameTitle"
+                        android:id="@+id/tvSignatureTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/personal_data_name"
+                        android:text="个性签名"
                         android:textColor="@color/darker_gray"
                         android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/tvName"
+                        android:id="@+id/tvSignature"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="80dp"
                         android:textColor="@color/light_gray"
-                        android:text="@string/personal_data_false_name"
+                        android:text="这个人很懒，什么也没留下。"
                         android:textSize="14sp"/>
                 </RelativeLayout>
 
@@ -111,30 +111,30 @@
                     android:background="@color/home_tab_bar_divider" />
 
                 <RelativeLayout
-                    android:id="@+id/layoutVersion"
+                    android:id="@+id/layoutRealName"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:padding="10dp"  >
 
                     <TextView
-                        android:id="@+id/tvGenderTitle"
+                        android:id="@+id/tvRealNameTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/personal_data_gender"
+                        android:text="真实名"
                         android:textColor="@color/darker_gray"
                         android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/tvGender"
+                        android:id="@+id/tvRealName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="80dp"
                         android:textColor="@color/light_gray"
-                        android:text="@string/personal_data_false_gender"
+                        android:text="张三"
                         android:textSize="14sp"/>
                 </RelativeLayout>
 
@@ -144,30 +144,30 @@
                     android:background="@color/home_tab_bar_divider" />
 
                 <RelativeLayout
-                    android:id="@+id/layoutMobile"
+                    android:id="@+id/layoutIdentityCardNumber"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:padding="10dp"  >
 
                     <TextView
-                        android:id="@+id/tvMobileTitle"
+                        android:id="@+id/tvIdentityCardNumberTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/personal_data_mobile"
+                        android:text="身份证号"
                         android:textColor="@color/darker_gray"
                         android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/tvMobile"
+                        android:id="@+id/tvIdentityCardNumber"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="80dp"
                         android:textColor="@color/light_gray"
-                        android:text="@string/personal_data_false_mobile"
+                        android:text="220211198001014523"
                         android:textSize="14sp"/>
                 </RelativeLayout>
 
@@ -177,30 +177,30 @@
                     android:background="@color/home_tab_bar_divider" />
 
                 <RelativeLayout
-                    android:id="@+id/layoutEmail"
+                    android:id="@+id/layoutCurrentAddress"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:padding="10dp"  >
 
                     <TextView
-                        android:id="@+id/tvEmailTitle"
+                        android:id="@+id/tvCurrentAddressTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/personal_data_email"
+                        android:text="当前地址"
                         android:textColor="@color/darker_gray"
                         android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/tvEmail"
+                        android:id="@+id/tvCurrentAddress"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="80dp"
                         android:textColor="@color/light_gray"
-                        android:text="@string/personal_data_false_email"
+                        android:text="中国-北京市-海淀区-中关村"
                         android:textSize="14sp"/>
                 </RelativeLayout>
 
@@ -210,30 +210,30 @@
                     android:background="@color/home_tab_bar_divider" />
 
                 <RelativeLayout
-                    android:id="@+id/layoutCardNumber"
+                    android:id="@+id/layoutHomeAddress"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:padding="10dp"  >
 
                     <TextView
-                        android:id="@+id/tvCardNumberTitle"
+                        android:id="@+id/tvHomeAddressTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/personal_data_card_number"
+                        android:text="故乡"
                         android:textColor="@color/darker_gray"
                         android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/tvCardNumber"
+                        android:id="@+id/tvHomeAddress"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="80dp"
                         android:textColor="@color/light_gray"
-                        android:text="@string/personal_data_false_card_number"
+                        android:text="中国-吉林省-吉林市-丰满区"
                         android:textSize="14sp"/>
                 </RelativeLayout>
 
@@ -243,30 +243,30 @@
                     android:background="@color/home_tab_bar_divider" />
 
                 <RelativeLayout
-                    android:id="@+id/layoutAddress"
+                    android:id="@+id/layoutTelephone"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:padding="10dp"  >
 
                     <TextView
-                        android:id="@+id/tvAddressTitle"
+                        android:id="@+id/tvTelephoneTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/personal_data_address"
+                        android:text="电话"
                         android:textColor="@color/darker_gray"
                         android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/tvAddress"
+                        android:id="@+id/tvTelephone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="80dp"
                         android:textColor="@color/light_gray"
-                        android:text="@string/personal_data_false_address"
+                        android:text="13813819438"
                         android:textSize="14sp"/>
                 </RelativeLayout>
 
@@ -276,30 +276,30 @@
                     android:background="@color/home_tab_bar_divider" />
 
                 <RelativeLayout
-                    android:id="@+id/layoutNeighborhood"
+                    android:id="@+id/layoutProfession"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:padding="10dp"  >
 
                     <TextView
-                        android:id="@+id/tvNeighborhoodTitle"
+                        android:id="@+id/tvProfessionTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/personal_data_neighborhood"
+                        android:text="职业"
                         android:textColor="@color/darker_gray"
                         android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/tvNeighborhood"
+                        android:id="@+id/tvProfession"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="80dp"
                         android:textColor="@color/light_gray"
-                        android:text="@string/personal_data_false_neighborhood"
+                        android:text="拍照"
                         android:textSize="14sp"/>
                 </RelativeLayout>
 
@@ -309,30 +309,62 @@
                     android:background="@color/home_tab_bar_divider" />
 
                 <RelativeLayout
-                    android:id="@+id/layoutTwodimencode"
+                    android:id="@+id/layoutInteresting"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:padding="10dp" >
 
                     <TextView
-                        android:id="@+id/tvCommunityTitle"
+                        android:id="@+id/tvInterestingTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/personal_data_community"
+                        android:text="兴趣爱好"
                         android:textColor="@color/darker_gray"
                         android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/tvCommunity"
+                        android:id="@+id/tvInteresting"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="80dp"
                         android:textColor="@color/light_gray"
-                        android:text="@string/personal_data_false_community"
+                        android:text="上网、打篮球、看书、游泳、旅游"
+                        android:textSize="14sp"/>
+                </RelativeLayout>
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/home_tab_bar_divider" />
+
+                <RelativeLayout
+                    android:id="@+id/layoutRemark"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:padding="10dp" >
+
+                    <TextView
+                        android:id="@+id/tvRemarkTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="备注"
+                        android:textColor="@color/darker_gray"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvRemark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="80dp"
+                        android:textColor="@color/light_gray"
+                        android:text="这个人真的很懒"
                         android:textSize="14sp"/>
                 </RelativeLayout>
             </LinearLayout>

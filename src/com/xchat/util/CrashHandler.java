@@ -90,8 +90,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
 		if (Environment.getExternalStorageState().equals(
 				Environment.MEDIA_MOUNTED)) {
 			try {
-				File dir = new File(Environment.getExternalStorageDirectory()
-						.getAbsolutePath() + File.separator + "crash");
+				File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "crash");
 				if (!dir.exists())
 					dir.mkdir();
 				File file = new File(dir, fileName);
@@ -185,6 +184,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
 		for (int i = 0; i < elements.length; i++) {
 			exceptionStr.append(elements[i].toString() + "\n");
 		}
+		ex.printStackTrace();
 		return exceptionStr.toString();
 	}
 

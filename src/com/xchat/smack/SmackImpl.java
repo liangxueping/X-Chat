@@ -9,6 +9,7 @@ import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.Roster.SubscriptionMode;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.RosterListener;
@@ -163,6 +164,8 @@ public class SmackImpl implements Smack {
 		this.mXMPPConnection = new XMPPConnection(mXMPPConfig);
 		this.mService = service;
 		mContentResolver = service.getContentResolver();
+		
+		Roster.setDefaultSubscriptionMode(SubscriptionMode.accept_all);
 	}
 
 	@Override
@@ -763,7 +766,7 @@ public class SmackImpl implements Smack {
 			throws XChatException {
 		mRoster = mXMPPConnection.getRoster();
 		try {
-			user = user + "@" + PreferenceConstants.HOST_SERVER;
+			user = user + "@" + PreferenceConstants.HOST_DOMAIN;
 //			user = user + "@liang-pc";
 			mRoster.createEntry(user, alias, new String[] { group });
 		} catch (XMPPException e) {

@@ -14,9 +14,7 @@
 		希望各位朋友们以邮件的形式反馈问题给我,再次表示感谢! \
 	</string>
 	<string name="login_help_information">
-		Tips:帐号由ID+@+服务器组成!\n
-	   	 例如：xchat@gmail.com,\n
-   		或者：xhat@192.168.1.110
+		欢迎使用X-Chat聊天软件\n
    	</string>
 	<!-- StatusPopUp -->
 	<string name="default_group">我的好友</string>
@@ -1347,30 +1345,10 @@
 	<string name="setting_about_description">弹指间 心无间</string>
 	<string name="versionnum">V1.0.0</string>
 	<string name="press_again_backrun">再按一次返回桌面</string>
-	<string name="xchat_email_address">xchat@gmail.com</string>
+	<string name="xchat_email_address">请输入用户名</string>
 	<string name="settings_fragment_title">设  置</string>
 	<string name="recent_chat_fragment_title">最近会话</string>
 	<string name="content_description">无</string>
 	<string name="app_version">V1.0.0</string>
-	
-	<string name="personal_data">个人资料</string>
-    <string name="personal_data_nickname">昵称</string>
-    <string name="personal_data_name">姓名</string>
-    <string name="personal_data_gender">性别</string>
-    <string name="personal_data_mobile">手机</string>
-    <string name="personal_data_email">邮箱</string>
-    <string name="personal_data_card_number">业主卡号</string>
-    <string name="personal_data_address">家庭住址</string>
-    <string name="personal_data_neighborhood">所属街道办</string>
-    <string name="personal_data_community">所属社区</string>
-    <string name="personal_data_false_nickname">小希</string>
-    <string name="personal_data_false_name">杨希</string>
-    <string name="personal_data_false_gender">女</string>
-    <string name="personal_data_false_mobile">186****1122</string>
-    <string name="personal_data_false_email">sin****0630@sina.com</string>
-    <string name="personal_data_false_card_number">1230861288762</string>
-    <string name="personal_data_false_address">北京市西城区罗庄西里2号1201</string>
-    <string name="personal_data_false_neighborhood">罗庄西里街道办</string>
-    <string name="personal_data_false_community">罗庄西里</string>
-	
+		
 </resources>
