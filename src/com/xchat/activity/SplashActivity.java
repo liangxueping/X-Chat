@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.text.TextUtils;
+
+import com.xchat.util.PreferenceConstants;
+import com.xchat.util.PreferenceUtils;
 
 public class SplashActivity extends FragmentActivity {
 	private Handler mHandler;
@@ -13,12 +17,12 @@ public class SplashActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.splash);
 		mHandler = new Handler();
-//		String password = PreferenceUtils.getPrefString(this, PreferenceConstants.PASSWORD, "");
-//		if (!TextUtils.isEmpty(password)) {
-//			mHandler.postDelayed(gotoMainAct, 1000);
-//		} else {
-//			mHandler.postDelayed(gotoLoginAct, 1000);
-//		}
+		String password = PreferenceUtils.getPrefString(this, PreferenceConstants.PASSWORD, "");
+		if (!TextUtils.isEmpty(password)) {
+			mHandler.postDelayed(gotoMainAct, 1000);
+		} else {
+			mHandler.postDelayed(gotoLoginAct, 1000);
+		}
 		mHandler.postDelayed(gotoLoginAct, 1000);
 	}
 
